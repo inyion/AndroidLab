@@ -12,33 +12,18 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.synnapps.carouselview.CarouselView
-                android:id="@+id/carouselView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                app:fillColor="#FFFFFFFF"
-                app:pageColor="#00000000"
-                app:radius="6dp"
-                app:slideInterval="3000"
-                app:strokeColor="#FF777777"
-                app:strokeWidth="1dp"/>
-            <!--<ScrollView-->
-                <!--android:id="@+id/scroll_view"-->
+            <!--<com.synnapps.carouselview.CarouselView-->
+                <!--android:id="@+id/carouselView"-->
                 <!--android:layout_width="match_parent"-->
                 <!--android:layout_height="200dp"-->
-                <!--android:layout_below="@id/carouselView">-->
-                <!--<TextView-->
-                    <!--android:id="@+id/html_text"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:text=""-->
-                    <!--android:textColor="#ffffff"-->
-                    <!--/>-->
-            <!--</ScrollView>-->
-
+                <!--app:fillColor="#FFFFFFFF"-->
+                <!--app:pageColor="#00000000"-->
+                <!--app:radius="6dp"-->
+                <!--app:slideInterval="3000"-->
+                <!--app:strokeColor="#FF777777"-->
+                <!--app:strokeWidth="1dp"/>-->
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/card_recycler_view"
-                android:layout_below="@id/carouselView"
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>

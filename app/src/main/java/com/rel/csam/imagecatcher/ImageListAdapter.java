@@ -37,7 +37,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.View
     public void onBindViewHolder(ImageListAdapter.ViewHolder viewHolder, int i) {
 
 //        viewHolder.title.setText(mImageList.get(i));
-        Glide.with(mContext).load(mImageList.get(i)).thumbnail(0.1f).fitCenter().into(viewHolder.img);
+        Glide.with(mContext).load(mImageList.get(i)).thumbnail(0.1f).into(viewHolder.img);
     }
 
     @Override
