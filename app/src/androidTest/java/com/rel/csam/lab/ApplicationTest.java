@@ -1,4 +1,4 @@
-package com.rel.csam.imagecatcher;
+package com.rel.csam.lab;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
