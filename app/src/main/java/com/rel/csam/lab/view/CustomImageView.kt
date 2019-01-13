@@ -1,4 +1,4 @@
-package com.rel.csam.lab
+package com.rel.csam.lab.view
 
 import android.content.Context
 import android.util.AttributeSet

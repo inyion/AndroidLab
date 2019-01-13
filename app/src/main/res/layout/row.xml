@@ -2,7 +2,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <com.rel.csam.lab.CustomImageView
+    <com.rel.csam.lab.view.CustomImageView
         android:id="@+id/img"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
