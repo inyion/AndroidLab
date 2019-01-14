@@ -13,9 +13,7 @@ import kotlinx.android.synthetic.main.activity_full_image.*
 class FullImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_full_image)
-        // Set up the user interaction to manually show or hide the system UI.
         Glide.with(this).load(intent.getStringExtra("image")).into(fullscreen_content!!)
     }
 }

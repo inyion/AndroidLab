@@ -3,13 +3,17 @@ package com.rel.csam.lab.view
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.databinding.BindingAdapter
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.rel.csam.lab.R
 import com.rel.csam.lab.model.LinkImage
@@ -18,6 +22,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.link_image_grid.*
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
@@ -41,7 +46,7 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         sharedPreferences = getSharedPreferences("image", Context.MODE_PRIVATE)
         refresh_layout.setOnRefreshListener(this)
@@ -173,5 +178,15 @@ class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     fun getMainImage(url: String): String {
         return sharedPreferences!!.getString(url, "")
+    }
+
+    @BindingAdapter("setItems")
+    fun setItems(view: RecyclerView, items: ArrayList<LinkImage>) {
+
+    }
+
+    @BindingAdapter("setMainImage")
+    fun setMainImage(view: ImageView, imgUrl: String) {
+
     }
 }

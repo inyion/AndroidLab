@@ -28,7 +28,6 @@ class ImageListAdapter(private val mContext: MainActivity, private var mImageLis
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         val data = mImageList[i]
-        //        viewHolder.title.setText(mImageList.get(i));
         viewHolder.img.setOnClickListener {
             if (data.url != null) {
                 mContext.getImageToLink(data.url!!, data.image!!)
@@ -42,11 +41,6 @@ class ImageListAdapter(private val mContext: MainActivity, private var mImageLis
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-//        val title: TextView? = null
         val img: CustomImageView = view.findViewById<View>(R.id.img) as CustomImageView
-
-        init {
-            //            title = (TextView)view.findViewById(R.id.title);
-        }
     }
 }
