@@ -3,7 +3,7 @@
     xmlns:bind="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="linkImage"
+            name="linkImageModel"
             type="com.rel.csam.lab.viewmodel.LinkImageModel"/>
     </data>
 
@@ -15,12 +15,13 @@
             android:scrollbars="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            bind:setItems="@{linkImage.items}"/>
+            bind:setItems="@{linkImageModel.items}"
+            on/>
         <ImageView
             android:id="@+id/main_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            bind:setMainImage="@{linkImage.mainImage}"/>
+            bind:setMainImage="@{linkImageModel.mainImage}"/>
     </RelativeLayout>
 </layout>
