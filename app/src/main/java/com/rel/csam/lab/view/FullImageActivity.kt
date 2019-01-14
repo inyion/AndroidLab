@@ -16,6 +16,6 @@ class FullImageActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_full_image)
         // Set up the user interaction to manually show or hide the system UI.
-        Glide.with(this).load(intent.getStringExtra("image")).into(fullscreen_content)
+        Glide.with(this).load(intent.getStringExtra("image")).into(fullscreen_content!!)
     }
 }
