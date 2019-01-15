@@ -26,12 +26,13 @@ class ImageListAdapter(private val context: Context, private var mImageList: Arr
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
         val data = mImageList[i]
-        viewHolder.img.setOnClickListener {
+
+        viewHolder.imageView.setOnClickListener {
             if (data.url != null) {
                 (context as MainActivity).viewModel!!.getImageToLink(data.url!!, data.image!!)
             }
         }
-        Glide.with(context).load(data.image).thumbnail(0.8f).into(viewHolder.img)
+        Glide.with(context).load(data.image).thumbnail(0.8f).into(viewHolder.imageView)
     }
 
     override fun getItemCount(): Int {
@@ -39,6 +40,6 @@ class ImageListAdapter(private val context: Context, private var mImageList: Arr
     }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val img: CustomImageView = view.findViewById<View>(R.id.img) as CustomImageView
+        val imageView: CustomImageView = view.findViewById<View>(R.id.img) as CustomImageView
     }
 }

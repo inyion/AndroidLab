@@ -1,6 +1,5 @@
 package com.rel.csam.lab.viewmodel
 
-import android.arch.lifecycle.ViewModel
 import android.databinding.BaseObservable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable

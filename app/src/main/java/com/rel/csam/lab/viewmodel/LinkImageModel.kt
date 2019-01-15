@@ -4,6 +4,7 @@ import android.databinding.Bindable
 import android.databinding.ObservableArrayList
 import android.text.TextUtils
 import android.util.Log
+import com.android.databinding.library.baseAdapters.BR
 import com.rel.csam.lab.App
 import com.rel.csam.lab.model.LinkImage
 import io.reactivex.Observable
@@ -13,13 +14,11 @@ import org.jsoup.Connection
 import org.jsoup.Jsoup
 
 class LinkImageModel: DisposableModel() {
-    private val tag: String = "LinkImage"
     companion object {
         const val mainWeb: String = "https://www.gettyimagesgallery.com/collection/celebrities/"
     }
-
-
-    var urlList = ArrayList<String>()               // 히스토리
+    private val tag: String = "LinkImage"
+    private var urlList = ArrayList<String>()       // 히스토리
 
     @Bindable
     var items = ObservableArrayList<LinkImage>()    // 이미지리스트
@@ -42,36 +41,31 @@ class LinkImageModel: DisposableModel() {
         zoomImage = null
 
         // 히스토리 등록
-        if (!url.equals(mainWeb) && !url.equals(urlList[urlList.lastIndex])) {
+        if (url != mainWeb && url != urlList[urlList.lastIndex]) {
             urlList.add(url)
         }
 
         // 페이지 로딩중 보여줄 저장해둔 메인이미지를 찾아보고
-        var mainImage = getMainImage(url)
+        mainImage = getMainImage(url)
         // 없으면 썸네일로 대체
         if (TextUtils.isEmpty(mainImage)) mainImage = thumbnailsUrl
-        this.mainImage = mainImage
+        notifyPropertyChanged(BR.mainImage)
 
         val replaceImages: ObservableArrayList<LinkImage> = ObservableArrayList()
-        var zoomImage: String? = null
         val disposable = Observable.fromCallable {
             Log.i(tag, "fromCallable")
+
             // 로그인 이후 이용가능한 페이지는
             // 로그인 페이지 띄우고 CookieManager 에서 쿠키를 가져와서 Jsoup header에 넣으면 가능하다고함
             // 응답이 느려서 라이브러리 문제라고 생각했는데 라이브러리 안쓰고 해도 페이지 자체가 연결이 느림
             val response = Jsoup.connect(url)
                     .method(Connection.Method.GET)
                     .execute()
-            Log.i(tag, "execute")
             val document = response.parse()
-            Log.i(tag, "parse")
-//            val imgRegex = "(?i)<img[^>]+?src\\s*=\\s*['\"]([^'\"]+)['\"][^>]*>"
-//            val p = Pattern.compile(imgRegex)
-//            val imgRegex = "img[src~=(?i)\\\\.(png|jpe?g|gif)]"
-            val images = document.select("img")
-            Log.i(tag, "select img")
+            val images = document.select("imageView")
+
             for (image in images) {
-                if (image.attr("class").equals("img-fluid")) {
+                if (image.attr("class").equals("imageView-fluid")) {
                     putMainImage(url, image.attr("src"))
                 } else {
                     if (image.parentNode() != null) {
@@ -93,43 +87,41 @@ class LinkImageModel: DisposableModel() {
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe {
             Log.i(tag, "subscribe")
-            // 로딩이미지 제거
-            this.mainImage = null
 
-            // 줌인이미지가 있는지..
+            this.mainImage = null
+            notifyPropertyChanged(BR.mainImage)
+
             if (!TextUtils.isEmpty(zoomImage)) {
-                this.zoomImage = zoomImage
                 urlList.removeAt(urlList.lastIndex)
+                notifyPropertyChanged(BR.zoomImage)
             } else {
-                // 없으면 그리드뷰
                 if (replaceImages.size > 0) {
                     items = replaceImages
                 }
+                notifyPropertyChanged(BR.items)
             }
         }
         addDisposable(disposable)
     }
 
     fun backHistory(): Boolean {
-        if (urlList.size > 1) { // 메인은 제외
+        return if (urlList.size > 1) { // 메인은 제외
             urlList.removeAt(urlList.lastIndex)
             val url = urlList[urlList.lastIndex]
             getImageToLink(url, getMainImage(url))
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
-    fun putMainImage(url: String, image: String) {
+    private fun putMainImage(url: String, image: String) {
         val edit = App.prefs.edit()
         edit.putString(url, image)
         edit.apply()
     }
 
-    fun getMainImage(url: String): String {
+    private fun getMainImage(url: String): String {
         return App.prefs.getString(url, "")
     }
-
-
 }
