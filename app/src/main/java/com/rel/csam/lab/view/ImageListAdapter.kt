@@ -1,21 +1,19 @@
 package com.rel.csam.lab.view
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-
 import com.bumptech.glide.Glide
 import com.rel.csam.lab.R
 import com.rel.csam.lab.model.LinkImage
-
-import java.util.ArrayList
+import java.util.*
 
 /**
  * Created by leechansaem on 2016. 11. 2..
  */
-class ImageListAdapter(private val mContext: MainActivity, private var mImageList: ArrayList<LinkImage>) : RecyclerView.Adapter<ImageListAdapter.ViewHolder>() {
+class ImageListAdapter(private val context: Context, private var mImageList: ArrayList<LinkImage>) : RecyclerView.Adapter<ImageListAdapter.ViewHolder>() {
 
     fun setImageList(imageList: ArrayList<LinkImage>) {
         this.mImageList = imageList
@@ -30,10 +28,10 @@ class ImageListAdapter(private val mContext: MainActivity, private var mImageLis
         val data = mImageList[i]
         viewHolder.img.setOnClickListener {
             if (data.url != null) {
-                mContext.getImageToLink(data.url!!, data.image!!)
+                (context as MainActivity).viewModel!!.getImageToLink(data.url!!, data.image!!)
             }
         }
-        Glide.with(mContext).load(data.image).thumbnail(0.8f).into(viewHolder.img)
+        Glide.with(context).load(data.image).thumbnail(0.8f).into(viewHolder.img)
     }
 
     override fun getItemCount(): Int {

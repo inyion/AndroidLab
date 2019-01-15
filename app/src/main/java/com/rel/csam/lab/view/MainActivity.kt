@@ -1,102 +1,98 @@
 package com.rel.csam.lab.view
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
 import android.os.Bundle
+import android.support.v4.content.ContextCompat.startActivity
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.rel.csam.lab.R
-import com.rel.csam.lab.R.id.*
-import com.rel.csam.lab.databinding.LinkImageGridBinding
+import com.rel.csam.lab.databinding.ActivityMainBinding
 import com.rel.csam.lab.model.LinkImage
 import com.rel.csam.lab.viewmodel.LinkImageModel
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
+import com.rel.csam.lab.viewmodel.LinkImageModel.Companion.mainWeb
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.link_image_grid.*
-import org.jsoup.Connection
-import org.jsoup.Jsoup
 
 /**
  * creator : sam
  * date : 2019. 1. 12.
  */
 class MainActivity : AppCompatActivity(), SwipeRefreshLayout.OnRefreshListener {
-//    private val TAG: String = "Main"
-    private var mZoomImage: String? = null
-    private var mAdapter: ImageListAdapter? = null
+
+    var viewModel: LinkImageModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<LinkImageGridBinding>(this, R.layout.activity_main)
-        binding.linkImageModel = LinkImageModel()
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        viewModel = LinkImageModel()
+        binding.linkImageModel = viewModel
+        binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
         binding.executePendingBindings()
 
-
         refresh_layout.setOnRefreshListener(this)
+        recycler_view.setHasFixedSize(true)
         //        DisplayMetrics displayMetrics = new DisplayMetrics();
         //        WindowManager windowmanager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         //        windowmanager.getDefaultDisplay().getMetrics(displayMetrics);
         //        mScreenSize = displayMetrics.widthPixels;
-
-        recycler_view.setHasFixedSize(true)
-        val layoutManager = GridLayoutManager(applicationContext, 3)
-        recycler_view.layoutManager = layoutManager
-        mAdapter = ImageListAdapter(this@MainActivity, mDataList)
-        recycler_view.adapter = mAdapter
-        mUrlList.add(mSite)
         onRefresh()
     }
 
+    override fun onDestroy() {
+        if (viewModel != null) viewModel!!.onCleared()
+        super.onDestroy()
+    }
+
     override fun onBackPressed() {
-        if (mUrlList.size > 1) { // 메인은 제외
-            mUrlList.removeAt(mUrlList.lastIndex)
-            val url = mUrlList[mUrlList.lastIndex]
-            getImageToLink(url, getMainImage(url))
-        } else {
+        if (!viewModel!!.backHistory()) {
             super.onBackPressed()
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.dispose()
-    }
-
     override fun onRefresh() {
-        getImageToLink(mSite, getMainImage(mSite))
-    }
-
-    fun putMainImage(url: String, image: String) {
-        val edit = sharedPreferences!!.edit()
-        edit.putString(url, image)
-        edit.commit()
-    }
-
-    fun getMainImage(url: String): String {
-        return sharedPreferences!!.getString(url, "")
+        viewModel!!.init()
     }
 
     @BindingAdapter("setItems")
     fun setItems(view: RecyclerView, items: ArrayList<LinkImage>) {
-
+        if (view.adapter == null) {
+            view.adapter = ImageListAdapter(view.context, items)
+        } else {
+            if (view.adapter is ImageListAdapter) {
+                (view.adapter as ImageListAdapter).setImageList(items)
+            }
+            view.adapter!!.notifyDataSetChanged()
+        }
     }
 
     @BindingAdapter("setMainImage")
-    fun setMainImage(view: ImageView, imgUrl: String) {
+    fun setMainImage(view: ImageView, imgUrl: String?) {
+        if (!TextUtils.isEmpty(imgUrl)) {
+            view.visibility = View.VISIBLE
+            Glide.with(this).load(imgUrl).into(view)
+        } else {
+            if (imgUrl.equals(mainWeb)) {
+                Glide.with(this).load(R.drawable.intro).thumbnail(0.8f).into(view)
+            } else {
+                view.visibility = View.GONE
+            }
+        }
+    }
 
+    @BindingAdapter("goZoomInImage")
+    fun goZoomInImage(view: RecyclerView, imageUrl: String) {
+        if (!TextUtils.isEmpty(imageUrl)) {
+            val intent = Intent(view.context, FullImageActivity::class.java)
+            intent.putExtra("image", imageUrl)
+            startActivity(view.context, intent, null)
+        }
+        refresh_layout.isRefreshing = false
     }
 }
