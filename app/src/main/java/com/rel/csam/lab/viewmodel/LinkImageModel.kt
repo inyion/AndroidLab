@@ -20,6 +20,8 @@ class LinkImageModel: BaseViewModel() {
     }
     private val tag: String = "LinkImage"
     private var urlList = ArrayList<String>()       // 히스토리
+    private var itemsMap = HashMap<String, ObservableArrayList<LinkImage>>()
+    private var zoomInImageMap = HashMap<String, String>()
 
     @Bindable
     var items = ObservableArrayList<LinkImage>()    // 이미지리스트
@@ -51,49 +53,69 @@ class LinkImageModel: BaseViewModel() {
     }
 
     fun getImageToLink(url: String, thumbnailsUrl: String) {
+        if (mainImage != null) return
         Log.d(tag, "getImageToLink")
         // 데이터 초기화
         zoomImage = null
+        zoomImage = zoomInImageMap[url]
+        var replaceImages = if (itemsMap.containsKey(url)) {
+            itemsMap[url]!!
+        } else {
+            ObservableArrayList()
+        }
+
+        if (zoomImage == null && replaceImages.size == 0) {
+            // 페이지 로딩중 보여줄 저장해둔 대표 이미지를 찾아보고
+            // 없으면 썸네일로 대체
+            mainImage = getMainImage(url)
+            if (TextUtils.isEmpty(mainImage)) mainImage = thumbnailsUrl
+            notifyPropertyChanged(BR.mainImage)
+
+        }
 
         // 히스토리 등록
         if (url != mainWeb && url != urlList[urlList.lastIndex]) {
             urlList.add(url)
         }
 
-        // 페이지 로딩중 보여줄 저장해둔 메인이미지를 찾아보고
-        mainImage = getMainImage(url)
-        // 없으면 썸네일로 대체
-        if (TextUtils.isEmpty(mainImage)) mainImage = thumbnailsUrl
-        notifyPropertyChanged(BR.mainImage)
-
-        val replaceImages: ObservableArrayList<LinkImage> = ObservableArrayList()
         val disposable = Observable.fromCallable {
             Log.d(tag, "fromCallable")
+            // 미리불러온게 없을때만
+            if (zoomImage == null && replaceImages.size == 0) {
+                // 로그인 이후 이용가능한 페이지는
+                // 로그인 페이지 띄우고 CookieManager 에서 쿠키를 가져와서 Jsoup header에 넣으면 가능하다고함
+                // 응답이 느려서 라이브러리 문제라고 생각했는데 라이브러리 안쓰고 해도 페이지 자체가 연결이 느림
+                val response = Jsoup.connect(url)
+                        .method(Connection.Method.GET)
+                        .execute()
+                val document = response.parse()
+                val images = document.select("img")
 
-            // 로그인 이후 이용가능한 페이지는
-            // 로그인 페이지 띄우고 CookieManager 에서 쿠키를 가져와서 Jsoup header에 넣으면 가능하다고함
-            // 응답이 느려서 라이브러리 문제라고 생각했는데 라이브러리 안쓰고 해도 페이지 자체가 연결이 느림
-            val response = Jsoup.connect(url)
-                    .method(Connection.Method.GET)
-                    .execute()
-            val document = response.parse()
-            val images = document.select("img")
+                for (image in images) {
+                    if (image.attr("class").equals("img-fluid")) {
+                        putMainImage(url, image.attr("src"))
+                    } else {
+                        if (image.parentNode() != null) {
+                            val parentNode = image.parentNode().parentNode()
+                            if (image.hasAttr("data-zoomable")) {
+                                zoomImage = image.attr("src")
+                            }
+                            else if (parentNode != null && parentNode.nodeName() == "a") {
+                                val data = LinkImage()
+                                data.href = parentNode.attr("href")
+                                data.image = image.attr("src")
+                                replaceImages.add(data)
+                            }
+                        }
+                    }
+                }
 
-            for (image in images) {
-                if (image.attr("class").equals("img-fluid")) {
-                    putMainImage(url, image.attr("src"))
-                } else {
-                    if (image.parentNode() != null) {
-                        val parentNode = image.parentNode().parentNode()
-                        if (image.hasAttr("data-zoomable")) {
-                            zoomImage = image.attr("src")
-                        }
-                        else if (parentNode != null && parentNode.nodeName() == "a") {
-                            val data = LinkImage()
-                            data.url = parentNode.attr("href")
-                            data.image = image.attr("src")
-                            replaceImages.add(data)
-                        }
+                when {
+                    zoomImage != null -> zoomInImageMap[url] = zoomImage!!
+                    replaceImages.size > 0 -> itemsMap[url] = replaceImages
+
+                    else -> {
+
                     }
                 }
             }
@@ -108,7 +130,7 @@ class LinkImageModel: BaseViewModel() {
                 notifyPropertyChanged(BR.zoomImage)
             } else {
 
-                this.mainImage = null
+                mainImage = null
                 notifyPropertyChanged(BR.mainImage)
 
                 if (replaceImages.size > 0) {

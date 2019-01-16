@@ -41,8 +41,8 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
         val data = mImageList[i]
 
         viewHolder.imageView.setOnClickListener {
-            if (data.url != null) {
-                viewModel.getImageToLink(data.url!!, data.image!!)
+            if (data.href != null) {
+                viewModel.getImageToLink(data.href!!, data.image!!)
             }
         }
         Glide.with(viewHolder.imageView).load(data.image).thumbnail(0.8f).into(viewHolder.imageView)

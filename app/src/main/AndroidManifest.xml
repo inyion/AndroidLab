@@ -13,6 +13,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".view.MainActivity"
+            android:configChanges="locale|orientation|keyboardHidden|screenSize"
             android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +23,7 @@
         </activity>
         <activity
             android:name=".view.ZoomInImageActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:configChanges="locale|orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_full_image"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
