@@ -1,12 +1,7 @@
 package com.rel.csam.lab.view
 
-import android.databinding.DataBindingComponent
-import android.databinding.DataBindingUtil
-import android.os.Bundle
 import android.support.v4.widget.SwipeRefreshLayout
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.rel.csam.lab.R
 import com.rel.csam.lab.databinding.ActivityMainBinding

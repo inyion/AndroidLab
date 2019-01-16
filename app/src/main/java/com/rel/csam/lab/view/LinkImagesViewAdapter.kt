@@ -1,7 +1,6 @@
 package com.rel.csam.lab.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingComponent
