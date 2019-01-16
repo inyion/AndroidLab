@@ -27,7 +27,7 @@ abstract class ViewModelActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        if (viewModel != null) viewModel!!.onCleared()
+        if (viewModel != null) viewModel!!.onDispose()
         super.onDestroy()
     }
 

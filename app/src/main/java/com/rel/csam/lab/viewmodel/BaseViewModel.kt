@@ -12,8 +12,8 @@ abstract class BaseViewModel: BaseObservable() {
         compositeDisposable.add(disposable)
     }
 
-    fun onCleared() {
-        compositeDisposable.clear()
+    fun onDispose() {
+        compositeDisposable.dispose()
     }
 
     abstract fun init()
