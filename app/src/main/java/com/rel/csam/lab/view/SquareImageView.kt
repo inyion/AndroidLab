@@ -7,7 +7,7 @@ import android.widget.ImageView
 /**
  * Created by leechansaem on 2016. 11. 3..
  */
-class CustomImageView : ImageView {
+class SquareImageView : ImageView {
     constructor(context: Context) : super(context) {}
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {}

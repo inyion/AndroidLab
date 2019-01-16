@@ -13,7 +13,8 @@ import io.reactivex.schedulers.Schedulers
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
-class LinkImageModel: DisposableModel() {
+class LinkImageModel: BaseViewModel() {
+
     companion object {
         const val mainWeb: String = "https://www.gettyimagesgallery.com/collection/celebrities/"
     }
@@ -27,16 +28,30 @@ class LinkImageModel: DisposableModel() {
     @Bindable
     var zoomImage: String? = null                   // 이미지상세
 
-    init {
+    override fun init() {
+        urlList.clear()
         urlList.add(mainWeb)
-    }
-
-    fun init() {
         getImageToLink(mainWeb, getMainImage(mainWeb))
     }
 
+    override fun onBackPressed(): Boolean {
+        return if (urlList.size > 1) { // 메인은 제외
+            urlList.removeAt(urlList.lastIndex)
+            val url = urlList[urlList.lastIndex]
+            getImageToLink(url, getMainImage(url))
+            false
+        } else {
+            true
+        }
+    }
+
+    override fun onStop() {
+        this.mainImage = null
+        notifyPropertyChanged(BR.mainImage)
+    }
+
     fun getImageToLink(url: String, thumbnailsUrl: String) {
-        Log.i(tag, "getImageToLink")
+        Log.d(tag, "getImageToLink")
         // 데이터 초기화
         zoomImage = null
 
@@ -53,7 +68,7 @@ class LinkImageModel: DisposableModel() {
 
         val replaceImages: ObservableArrayList<LinkImage> = ObservableArrayList()
         val disposable = Observable.fromCallable {
-            Log.i(tag, "fromCallable")
+            Log.d(tag, "fromCallable")
 
             // 로그인 이후 이용가능한 페이지는
             // 로그인 페이지 띄우고 CookieManager 에서 쿠키를 가져와서 Jsoup header에 넣으면 가능하다고함
@@ -62,10 +77,10 @@ class LinkImageModel: DisposableModel() {
                     .method(Connection.Method.GET)
                     .execute()
             val document = response.parse()
-            val images = document.select("imageView")
+            val images = document.select("img")
 
             for (image in images) {
-                if (image.attr("class").equals("imageView-fluid")) {
+                if (image.attr("class").equals("img-fluid")) {
                     putMainImage(url, image.attr("src"))
                 } else {
                     if (image.parentNode() != null) {
@@ -86,15 +101,16 @@ class LinkImageModel: DisposableModel() {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe {
-            Log.i(tag, "subscribe")
-
-            this.mainImage = null
-            notifyPropertyChanged(BR.mainImage)
+            Log.d(tag, "subscribe")
 
             if (!TextUtils.isEmpty(zoomImage)) {
                 urlList.removeAt(urlList.lastIndex)
                 notifyPropertyChanged(BR.zoomImage)
             } else {
+
+                this.mainImage = null
+                notifyPropertyChanged(BR.mainImage)
+
                 if (replaceImages.size > 0) {
                     items = replaceImages
                 }
@@ -102,17 +118,6 @@ class LinkImageModel: DisposableModel() {
             }
         }
         addDisposable(disposable)
-    }
-
-    fun backHistory(): Boolean {
-        return if (urlList.size > 1) { // 메인은 제외
-            urlList.removeAt(urlList.lastIndex)
-            val url = urlList[urlList.lastIndex]
-            getImageToLink(url, getMainImage(url))
-            true
-        } else {
-            false
-        }
     }
 
     private fun putMainImage(url: String, image: String) {

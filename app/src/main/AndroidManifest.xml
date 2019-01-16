@@ -21,10 +21,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.FullImageActivity"
+            android:name=".view.ZoomInImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_full_image"
-            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
 
 </manifest>

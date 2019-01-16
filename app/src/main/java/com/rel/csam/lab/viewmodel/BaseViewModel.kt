@@ -4,7 +4,7 @@ import android.databinding.BaseObservable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-open class DisposableModel: BaseObservable() {
+abstract class BaseViewModel: BaseObservable() {
 
     private val compositeDisposable = CompositeDisposable()
 
@@ -15,4 +15,10 @@ open class DisposableModel: BaseObservable() {
     fun onCleared() {
         compositeDisposable.clear()
     }
+
+    abstract fun init()
+
+    abstract fun onBackPressed(): Boolean
+
+    abstract fun onStop()
 }
