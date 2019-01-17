@@ -92,7 +92,7 @@ class LinkImageModel: BaseViewModel() {
                 val images = document.select("img")
 
                 for (image in images) {
-                    if (image.attr("class").equals("img-fluid")) {
+                    if (image.attr("class") == "img-fluid") {
                         putLoadingImage(url, image.attr("src"))
                     } else {
                         if (image.parentNode() != null) {
