@@ -31,12 +31,14 @@ class LinkImageModel: BaseViewModel() {
     var zoomImage: String? = null                   // 이미지상세
 
     override fun init() {
+        if (loadingImage != null) return
         urlList.clear()
         urlList.add(mainWeb)
         getImageToLink(mainWeb, getLoadingImage(mainWeb))
     }
 
     override fun onBackPressed(): Boolean {
+        if (loadingImage != null) return false
         return if (urlList.size > 1) { // 메인은 제외
             urlList.removeAt(urlList.lastIndex)
             val url = urlList[urlList.lastIndex]
