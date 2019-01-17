@@ -68,8 +68,8 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
         view.adapter!!.notifyDataSetChanged()
     }
 
-    @BindingAdapter("setLoaingImage")
-    fun setLoaingImage(view: ImageView, imgUrl: String?) {
+    @BindingAdapter("setLoadingImage")
+    fun setLoadingImage(view: ImageView, imgUrl: String?) {
         if (!TextUtils.isEmpty(imgUrl)) {
             view.visibility = View.VISIBLE
             Glide.with(view.context).load(imgUrl).into(view)
@@ -78,8 +78,8 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
         }
     }
 
-    @BindingAdapter("setLoaingImage")
-    fun setLoaingImage(view: SwipeRefreshLayout, imgUrl: String?) {
+    @BindingAdapter("setLoadingImage")
+    fun setLoadingImage(view: SwipeRefreshLayout, imgUrl: String?) {
         if (TextUtils.isEmpty(imgUrl)) {
             view.isRefreshing = false
         }

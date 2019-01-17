@@ -12,7 +12,7 @@
         android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        bind:setLoaingImage="@{viewModel.loadingImage}">
+        bind:setLoadingImage="@{viewModel.loadingImage}">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -29,7 +29,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                bind:setLoaingImage="@{viewModel.loadingImage}"/>
+                bind:setLoadingImage="@{viewModel.loadingImage}"/>
         </RelativeLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>
