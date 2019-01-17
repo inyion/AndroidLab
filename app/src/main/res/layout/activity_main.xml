@@ -4,7 +4,7 @@
 
     <data>
         <variable
-            name="linkImageModel"
+            name="viewModel"
             type="com.rel.csam.lab.viewmodel.LinkImageModel"/>
     </data>
 
@@ -12,7 +12,7 @@
         android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        bind:setMainImage="@{linkImageModel.mainImage}">
+        bind:setLoaingImage="@{viewModel.loadingImage}">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,14 +22,14 @@
                 android:scrollbars="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                bind:setItems="@{linkImageModel.items}"
-                bind:goZoomInImage="@{linkImageModel.zoomImage}"/>
+                bind:setItems="@{viewModel.items}"
+                bind:goZoomInImage="@{viewModel.zoomImage}"/>
             <ImageView
                 android:id="@+id/main_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="centerCrop"
-                bind:setMainImage="@{linkImageModel.mainImage}"/>
+                bind:setLoaingImage="@{viewModel.loadingImage}"/>
         </RelativeLayout>
 
     </android.support.v4.widget.SwipeRefreshLayout>

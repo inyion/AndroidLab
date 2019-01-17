@@ -19,7 +19,7 @@ class MainActivity : ViewModelActivity(), SwipeRefreshLayout.OnRefreshListener {
         val adapter = LinkImagesViewAdapter(viewModel as LinkImageModel)
         val binding = super.setContentView<ActivityMainBinding>(R.layout.activity_main, adapter, viewModel as LinkImageModel)
         if (binding != null) {
-            binding.linkImageModel = viewModel as LinkImageModel?
+            binding.viewModel = viewModel as LinkImageModel?
             binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
         }
 

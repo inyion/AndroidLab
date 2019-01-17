@@ -26,21 +26,21 @@ class LinkImageModel: BaseViewModel() {
     @Bindable
     var items = ObservableArrayList<LinkImage>()    // 이미지리스트
     @Bindable
-    var mainImage: String? = null                   // 로딩중 보여줄 대표이미지
+    var loadingImage: String? = null                   // 로딩중 보여줄 대표이미지
     @Bindable
     var zoomImage: String? = null                   // 이미지상세
 
     override fun init() {
         urlList.clear()
         urlList.add(mainWeb)
-        getImageToLink(mainWeb, getMainImage(mainWeb))
+        getImageToLink(mainWeb, getLoadingImage(mainWeb))
     }
 
     override fun onBackPressed(): Boolean {
         return if (urlList.size > 1) { // 메인은 제외
             urlList.removeAt(urlList.lastIndex)
             val url = urlList[urlList.lastIndex]
-            getImageToLink(url, getMainImage(url))
+            getImageToLink(url, getLoadingImage(url))
             false
         } else {
             true
@@ -48,12 +48,12 @@ class LinkImageModel: BaseViewModel() {
     }
 
     override fun onStop() {
-        this.mainImage = null
-        notifyPropertyChanged(BR.mainImage)
+        this.loadingImage = null
+        notifyPropertyChanged(BR.loadingImage)
     }
 
     fun getImageToLink(url: String, thumbnailsUrl: String) {
-        if (mainImage != null) return
+        if (loadingImage != null) return
         Log.d(tag, "getImageToLink")
         // 데이터 초기화
         zoomImage = null
@@ -67,9 +67,9 @@ class LinkImageModel: BaseViewModel() {
         if (zoomImage == null && replaceImages.size == 0) {
             // 페이지 로딩중 보여줄 저장해둔 대표 이미지를 찾아보고
             // 없으면 썸네일로 대체
-            mainImage = getMainImage(url)
-            if (TextUtils.isEmpty(mainImage)) mainImage = thumbnailsUrl
-            notifyPropertyChanged(BR.mainImage)
+            loadingImage = getLoadingImage(url)
+            if (TextUtils.isEmpty(loadingImage)) loadingImage = thumbnailsUrl
+            notifyPropertyChanged(BR.loadingImage)
 
         }
 
@@ -93,7 +93,7 @@ class LinkImageModel: BaseViewModel() {
 
                 for (image in images) {
                     if (image.attr("class").equals("img-fluid")) {
-                        putMainImage(url, image.attr("src"))
+                        putLoadingImage(url, image.attr("src"))
                     } else {
                         if (image.parentNode() != null) {
                             val parentNode = image.parentNode().parentNode()
@@ -130,8 +130,8 @@ class LinkImageModel: BaseViewModel() {
                 notifyPropertyChanged(BR.zoomImage)
             } else {
 
-                mainImage = null
-                notifyPropertyChanged(BR.mainImage)
+                loadingImage = null
+                notifyPropertyChanged(BR.loadingImage)
 
                 if (replaceImages.size > 0) {
                     items = replaceImages
@@ -142,13 +142,20 @@ class LinkImageModel: BaseViewModel() {
         addDisposable(disposable)
     }
 
-    private fun putMainImage(url: String, image: String) {
+    fun onItemClick(index: Int?) {
+        val data = items[index!!]
+        if (data.href != null) {
+            getImageToLink(data.href!!, data.image!!)
+        }
+    }
+
+    private fun putLoadingImage(url: String, image: String) {
         val edit = App.prefs.edit()
         edit.putString(url, image)
         edit.apply()
     }
 
-    private fun getMainImage(url: String): String {
+    private fun getLoadingImage(url: String): String {
         return App.prefs.getString(url, "")
     }
 }

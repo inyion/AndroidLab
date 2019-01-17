@@ -36,6 +36,7 @@ abstract class ViewModelActivity : AppCompatActivity() {
         super.onStop()
     }
 
+    @Suppress("UNCHECKED_CAST")
     fun <T: ViewDataBinding> setContentView(layoutId: Int, bindingComponent: DataBindingComponent, viewModel: BaseViewModel):T ? {
         binding = DataBindingUtil.setContentView(this, layoutId, bindingComponent)
         this.viewModel = viewModel
