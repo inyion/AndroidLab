@@ -58,7 +58,7 @@ class LinkImageModel: BaseViewModel() {
         // 데이터 초기화
         zoomImage = null
         zoomImage = zoomInImageMap[url]
-        var replaceImages = if (itemsMap.containsKey(url)) {
+        val replaceImages = if (itemsMap.containsKey(url)) {
             itemsMap[url]!!
         } else {
             ObservableArrayList()
