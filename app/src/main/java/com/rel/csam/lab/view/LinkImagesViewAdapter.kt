@@ -1,10 +1,10 @@
 package com.rel.csam.lab.view
 
-import android.app.Activity
 import android.content.Intent
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingComponent
 import android.support.v4.content.ContextCompat
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -15,7 +15,6 @@ import com.bumptech.glide.Glide
 import com.rel.csam.lab.R
 import com.rel.csam.lab.model.LinkImage
 import com.rel.csam.lab.viewmodel.LinkImageModel
-import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Created by leechansaem on 2016. 11. 2..
@@ -71,7 +70,13 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
             Glide.with(view.context).load(imgUrl).into(view)
         } else {
             view.visibility = View.GONE
-            (view.context as Activity).refresh_layout.isRefreshing = false
+        }
+    }
+
+    @BindingAdapter("setMainImage")
+    fun setMainImage(view: SwipeRefreshLayout, imgUrl: String?) {
+        if (TextUtils.isEmpty(imgUrl)) {
+            view.isRefreshing = false
         }
     }
 
