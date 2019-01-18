@@ -44,8 +44,6 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         viewHolder.bind(viewModel, position)
-        val data = getItem(position)
-        Glide.with(viewHolder.itemView.context).load(data.image).thumbnail(0.8f).into(viewHolder.imageView)
     }
 
     fun getItem(position: Int): LinkImage {
@@ -94,12 +92,16 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
         }
     }
 
-    inner class ViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
-        val imageView: SquareImageView = itemView.findViewById<View>(R.id.img) as SquareImageView
+    @BindingAdapter("imageSrc")
+    fun imageSrc(view: SquareImageView, image: String) {
+        Glide.with(view).load(image).thumbnail(0.8f).into(view)
+    }
 
+    inner class ViewHolder(private val binding: ViewDataBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(viewModel: LinkImageModel, position: Int) {
             binding.setVariable(BR.viewModel, viewModel)
             binding.setVariable(BR.position, position)
+            binding.setVariable(BR.image, getItem(position).image)
             binding.executePendingBindings()
         }
     }
