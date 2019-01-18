@@ -6,7 +6,6 @@ import com.bumptech.glide.Glide
 import com.rel.csam.lab.R
 import com.rel.csam.lab.databinding.ActivityMainBinding
 import com.rel.csam.lab.viewmodel.LinkImageModel
-import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * creator : sam
@@ -21,11 +20,11 @@ class MainActivity : ViewModelActivity(), SwipeRefreshLayout.OnRefreshListener {
         if (binding != null) {
             binding.viewModel = viewModel as LinkImageModel?
             binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
+            binding.recyclerView.setHasFixedSize(true)
+            Glide.with(this).load(R.drawable.intro).thumbnail(0.8f).into(binding.mainImage)
+            binding.refreshLayout.setOnRefreshListener(this)
         }
 
-        refresh_layout.setOnRefreshListener(this)
-        recycler_view.setHasFixedSize(true)
-        Glide.with(this).load(R.drawable.intro).thumbnail(0.8f).into(main_image)
         onRefresh()
     }
 
