@@ -31,21 +31,31 @@ class LinkImageModel: BaseViewModel() {
     var zoomImage: String? = null                   // 이미지상세
 
     override fun init() {
-        if (loadingImage != null) return
+        if (isLoading()) return
+
         urlList.clear()
         urlList.add(mainWeb)
+
         getImageToLink(mainWeb, getLoadingImage(mainWeb))
     }
 
     override fun onBackPressed(): Boolean {
-        if (loadingImage != null) return false
-        return if (urlList.size > 1) { // 메인은 제외
+
+        if (isLoading()) return false
+
+        return if (urlList.size > 1) {
+
             urlList.removeAt(urlList.lastIndex)
+
             val url = urlList[urlList.lastIndex]
             getImageToLink(url, getLoadingImage(url))
+
             false
+
         } else {
+
             true
+
         }
     }
 
@@ -54,21 +64,27 @@ class LinkImageModel: BaseViewModel() {
         notifyPropertyChanged(BR.loadingImage)
     }
 
+    fun isLoading():Boolean {
+        return loadingImage != null
+    }
+
     fun getImageToLink(url: String, thumbnailsUrl: String) {
-        if (loadingImage != null) return
+
+        if (isLoading()) return
+
         Log.d(tag, "getImageToLink")
+
         // 데이터 초기화
-        zoomImage = null
-        zoomImage = zoomInImageMap[url]
-        val replaceImages = if (itemsMap.containsKey(url)) {
+        zoomImage = zoomInImageMap[url] // 상세보기 데이터
+        val replaceImages = if (itemsMap.containsKey(url)) { // 리스트데이터
             itemsMap[url]!!
         } else {
             ObservableArrayList()
         }
 
+        // 로딩이미지 처리
         if (zoomImage == null && replaceImages.size == 0) {
-            // 페이지 로딩중 보여줄 저장해둔 대표 이미지를 찾아보고
-            // 없으면 썸네일로 대체
+
             loadingImage = getLoadingImage(url)
             if (TextUtils.isEmpty(loadingImage)) loadingImage = thumbnailsUrl
             notifyPropertyChanged(BR.loadingImage)
@@ -81,12 +97,16 @@ class LinkImageModel: BaseViewModel() {
         }
 
         val disposable = Observable.fromCallable {
+
             Log.d(tag, "fromCallable")
-            // 미리불러온게 없을때만
+
+            // 새로 불러와야 할 때만
             if (zoomImage == null && replaceImages.size == 0) {
-                // 로그인 이후 이용가능한 페이지는
-                // 로그인 페이지 띄우고 CookieManager 에서 쿠키를 가져와서 Jsoup header에 넣으면 가능하다고함
+
+                // 로그인 이후 이용가능한 페이지는 로그인 페이지 띄우고 CookieManager 에서 쿠키를 가져와서 Jsoup header에 넣으면 가능하다고함
                 // 응답이 느려서 라이브러리 문제라고 생각했는데 라이브러리 안쓰고 해도 페이지 자체가 연결이 느림
+
+                // 페이지 읽어오고 파싱 및 검색
                 val response = Jsoup.connect(url)
                         .method(Connection.Method.GET)
                         .execute()
