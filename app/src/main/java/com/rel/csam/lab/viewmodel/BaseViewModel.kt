@@ -1,10 +1,10 @@
 package com.rel.csam.lab.viewmodel
 
-import android.databinding.BaseObservable
+import android.arch.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
-abstract class BaseViewModel: BaseObservable() {
+abstract class BaseViewModel: ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
 

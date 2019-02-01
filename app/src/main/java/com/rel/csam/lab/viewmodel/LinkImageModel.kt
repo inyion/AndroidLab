@@ -1,10 +1,9 @@
 package com.rel.csam.lab.viewmodel
 
-import android.databinding.Bindable
+import android.arch.lifecycle.MutableLiveData
 import android.databinding.ObservableArrayList
 import android.text.TextUtils
 import android.util.Log
-import com.android.databinding.library.baseAdapters.BR
 import com.rel.csam.lab.App
 import com.rel.csam.lab.model.LinkImage
 import io.reactivex.Observable
@@ -20,15 +19,16 @@ class LinkImageModel: BaseViewModel() {
     }
     private val tag: String = "LinkImage"
     private var urlList = ArrayList<String>()       // 히스토리
-    private var itemsMap = HashMap<String, ObservableArrayList<LinkImage>>()
+    private var itemsMap = HashMap<String, ArrayList<LinkImage>>()
     private var zoomInImageMap = HashMap<String, String>()
 
-    @Bindable
-    var items = ObservableArrayList<LinkImage>()    // 이미지리스트
-    @Bindable
-    var loadingImage: String? = null                   // 로딩중 보여줄 대표이미지
-    @Bindable
-    var zoomImage: String? = null                   // 이미지상세
+    private val _items = MutableLiveData<ArrayList<LinkImage>>()    // 이미지리스트
+    private val _loadingImage =  MutableLiveData<String>()       // 로딩중 보여줄 대표이미지
+    private val _zoomImage = MutableLiveData<String>()            // 이미지상세
+
+    val items: MutableLiveData<ArrayList<LinkImage>> = _items    // 이미지리스트
+    val loadingImage: MutableLiveData<String> = _loadingImage                   // 로딩중 보여줄 대표이미지
+    val zoomImage: MutableLiveData<String> = _zoomImage                   // 이미지상세val
 
     override fun init() {
         if (isLoading()) return
@@ -60,12 +60,11 @@ class LinkImageModel: BaseViewModel() {
     }
 
     override fun onStop() {
-        this.loadingImage = null
-        notifyPropertyChanged(BR.loadingImage)
+        _loadingImage.value = null
     }
 
     fun isLoading():Boolean {
-        return loadingImage != null
+        return loadingImage.value != null
     }
 
     fun getImageToLink(url: String, thumbnailsUrl: String) {
@@ -75,7 +74,7 @@ class LinkImageModel: BaseViewModel() {
         Log.d(tag, "getImageToLink")
 
         // 데이터 초기화
-        zoomImage = zoomInImageMap[url] // 상세보기 데이터
+        var zoomImage = zoomInImageMap[url] // 상세보기 데이터
         val replaceImages = if (itemsMap.containsKey(url)) { // 리스트데이터
             itemsMap[url]!!
         } else {
@@ -85,10 +84,9 @@ class LinkImageModel: BaseViewModel() {
         // 로딩이미지 처리
         if (zoomImage == null && replaceImages.size == 0) {
 
-            loadingImage = getLoadingImage(url)
+            var loadingImage = getLoadingImage(url)
             if (TextUtils.isEmpty(loadingImage)) loadingImage = thumbnailsUrl
-            notifyPropertyChanged(BR.loadingImage)
-
+            _loadingImage.value = loadingImage
         }
 
         // 히스토리 등록
@@ -126,6 +124,9 @@ class LinkImageModel: BaseViewModel() {
                                 val data = LinkImage()
                                 data.href = parentNode.attr("href")
                                 data.image = image.attr("src")
+                                if (TextUtils.isEmpty(data.image)) {
+                                    data.image = image.attr("data-src")
+                                }
                                 replaceImages.add(data)
                             }
                         }
@@ -149,23 +150,18 @@ class LinkImageModel: BaseViewModel() {
 
             if (!TextUtils.isEmpty(zoomImage)) {
                 urlList.removeAt(urlList.lastIndex)
-                notifyPropertyChanged(BR.zoomImage)
+                _zoomImage.value = zoomImage
             } else {
 
-                loadingImage = null
-                notifyPropertyChanged(BR.loadingImage)
-
-                if (replaceImages.size > 0) {
-                    items = replaceImages
-                }
-                notifyPropertyChanged(BR.items)
+                _loadingImage.value = null
+                _items.value = replaceImages
             }
         }
         addDisposable(disposable)
     }
 
-    fun onItemClick(index: Int?) {
-        val data = items[index!!]
+    fun onItemClick(index: Int) {
+        val data = items.value!![index]
         if (data.href != null) {
             getImageToLink(data.href!!, data.image!!)
         }

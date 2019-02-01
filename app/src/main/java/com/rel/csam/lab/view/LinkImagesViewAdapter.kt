@@ -1,5 +1,6 @@
 package com.rel.csam.lab.view
 
+import android.arch.lifecycle.MutableLiveData
 import android.content.Intent
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingComponent
@@ -25,13 +26,13 @@ import com.rel.csam.lab.viewmodel.LinkImageModel
  */
 class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerView.Adapter<LinkImagesViewAdapter.ViewHolder>(), DataBindingComponent {
 
-    private var mImageList: ArrayList<LinkImage> = ArrayList()
+    private var mImageList: MutableLiveData<ArrayList<LinkImage>> = MutableLiveData()
 
     override fun getLinkImagesViewAdapter(): LinkImagesViewAdapter {
         return this
     }
 
-    fun setImageList(imageList: ArrayList<LinkImage>) {
+    fun setImageList(imageList: MutableLiveData<ArrayList<LinkImage>>) {
         this.mImageList = imageList
     }
 
@@ -47,15 +48,19 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
     }
 
     fun getItem(position: Int): LinkImage {
-        return mImageList[position]
+        return mImageList.value!![position]
     }
 
     override fun getItemCount(): Int {
-        return mImageList.size
+        return if (mImageList.value != null) {
+            mImageList.value!!.size
+        } else {
+            0
+        }
     }
 
     @BindingAdapter("setItems")
-    fun setItems(view: RecyclerView, items: ArrayList<LinkImage>) {
+    fun setItems(view: RecyclerView, items: MutableLiveData<ArrayList<LinkImage>>) {
         if (view.adapter == null) {
             view.adapter = LinkImagesViewAdapter(viewModel)
         }
@@ -67,27 +72,27 @@ class LinkImagesViewAdapter(private val viewModel: LinkImageModel) : RecyclerVie
     }
 
     @BindingAdapter("setLoadingImage")
-    fun setLoadingImage(view: ImageView, imgUrl: String?) {
-        if (!TextUtils.isEmpty(imgUrl)) {
+    fun setLoadingImage(view: ImageView, imgUrl: MutableLiveData<String>) {
+        if (!TextUtils.isEmpty(imgUrl.value)) {
             view.visibility = View.VISIBLE
-            Glide.with(view.context).load(imgUrl).into(view)
+            Glide.with(view.context).load(imgUrl.value).into(view)
         } else {
             view.visibility = View.GONE
         }
     }
 
     @BindingAdapter("setLoadingImage")
-    fun setLoadingImage(view: SwipeRefreshLayout, imgUrl: String?) {
-        if (TextUtils.isEmpty(imgUrl)) {
+    fun setLoadingImage(view: SwipeRefreshLayout, imgUrl: MutableLiveData<String>) {
+        if (TextUtils.isEmpty(imgUrl.value)) {
             view.isRefreshing = false
         }
     }
 
     @BindingAdapter("goZoomInImage")
-    fun goZoomInImage(view: RecyclerView, imageUrl: String?) {
-        if (!TextUtils.isEmpty(imageUrl)) {
+    fun goZoomInImage(view: RecyclerView, imageUrl: MutableLiveData<String>) {
+        if (!TextUtils.isEmpty(imageUrl.value)) {
             val intent = Intent(view.context, ZoomInImageActivity::class.java)
-            intent.putExtra("image", imageUrl)
+            intent.putExtra("image", imageUrl.value)
             ContextCompat.startActivity(view.context, intent, null)
         }
     }
