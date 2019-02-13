@@ -1,5 +1,6 @@
 package com.rel.csam.lab.viewmodel
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.databinding.ObservableArrayList
 import android.text.TextUtils
@@ -26,9 +27,9 @@ class LinkImageModel: BaseViewModel() {
     private val _loadingImage =  MutableLiveData<String>()       // 로딩중 보여줄 대표이미지
     private val _zoomImage = MutableLiveData<String>()            // 이미지상세
 
-    val items: MutableLiveData<ArrayList<LinkImage>> = _items    // 이미지리스트
-    val loadingImage: MutableLiveData<String> = _loadingImage                   // 로딩중 보여줄 대표이미지
-    val zoomImage: MutableLiveData<String> = _zoomImage                   // 이미지상세val
+    val items: LiveData<ArrayList<LinkImage>> = _items    // 이미지리스트
+    val loadingImage: LiveData<String> = _loadingImage                   // 로딩중 보여줄 대표이미지
+    val zoomImage: LiveData<String> = _zoomImage                   // 이미지상세val
 
     override fun init() {
         if (isLoading()) return
