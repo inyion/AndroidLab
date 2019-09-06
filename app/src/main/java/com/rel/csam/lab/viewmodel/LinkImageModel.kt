@@ -1,8 +1,8 @@
 package com.rel.csam.lab.viewmodel
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.databinding.ObservableArrayList
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.databinding.ObservableArrayList
 import android.text.TextUtils
 import android.util.Log
 import com.rel.csam.lab.App
@@ -13,7 +13,7 @@ import io.reactivex.schedulers.Schedulers
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
-class LinkImageModel: BaseViewModel() {
+class LinkImageModel: ListModel<LinkImage>() {
 
     companion object {
         const val mainWeb: String = "https://www.gettyimagesgallery.com/collection/celebrities/"
@@ -23,11 +23,9 @@ class LinkImageModel: BaseViewModel() {
     private var itemsMap = HashMap<String, ArrayList<LinkImage>>()
     private var zoomInImageMap = HashMap<String, String>()
 
-    private val _items = MutableLiveData<ArrayList<LinkImage>>()    // 이미지리스트
     private val _loadingImage =  MutableLiveData<String>()       // 로딩중 보여줄 대표이미지
     private val _zoomImage = MutableLiveData<String>()            // 이미지상세
 
-    val items: LiveData<ArrayList<LinkImage>> = _items    // 이미지리스트
     val loadingImage: LiveData<String> = _loadingImage                   // 로딩중 보여줄 대표이미지
     val zoomImage: LiveData<String> = _zoomImage                   // 이미지상세val
 
@@ -155,7 +153,7 @@ class LinkImageModel: BaseViewModel() {
             } else {
 
                 _loadingImage.value = null
-                _items.value = replaceImages
+                setItemList(replaceImages)
             }
         }
         addDisposable(disposable)

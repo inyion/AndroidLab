@@ -1,17 +1,17 @@
 package com.rel.csam.lab.view
 
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProviders
-import android.databinding.DataBindingComponent
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
+import androidx.databinding.DataBindingComponent
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.rel.csam.lab.viewmodel.BaseViewModel
 
-abstract class ViewModelActivity : AppCompatActivity() {
+abstract class ViewModelActivity<VM: BaseViewModel> : AppCompatActivity() {
 
-    lateinit var viewModel: BaseViewModel
+    lateinit var viewModel: VM
     private lateinit var binding: ViewDataBinding
     private lateinit var bindingComponent: DataBindingComponent
 
@@ -48,13 +48,13 @@ abstract class ViewModelActivity : AppCompatActivity() {
     @Suppress("UNCHECKED_CAST")
     fun <T: ViewDataBinding> setContentLayout(layoutId: Int):T  {
         binding = DataBindingUtil.setContentView(this, layoutId, bindingComponent)
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
         return binding as T
     }
 
     fun <T : ViewModel> createViewModel(modelClass: Class<T>) {
-        val vm = ViewModelProviders.of(this).get(modelClass)
-        this.viewModel = vm as BaseViewModel
+        val viewModel = ViewModelProviders.of(this).get(modelClass)
+        this.viewModel = viewModel as VM
     }
 
     fun createDataBindingComponent(component: DataBindingComponent) {
