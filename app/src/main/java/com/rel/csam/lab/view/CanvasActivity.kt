@@ -12,27 +12,25 @@ import android.os.Build
 import android.text.TextUtils
 import android.util.Log
 import android.util.SparseIntArray
+import android.view.Gravity
 import android.view.Surface
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager
+import com.beloo.widget.chipslayoutmanager.gravity.IChildGravityResolver
+import com.beloo.widget.chipslayoutmanager.layouter.breaker.IRowBreaker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.common.FirebaseVisionImageMetadata
 import com.google.firebase.ml.vision.text.FirebaseVisionCloudTextRecognizerOptions
 import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
-import com.googlecode.tesseract.android.TessBaseAPI
 import com.rel.csam.lab.R
 import com.rel.csam.lab.databinding.DrawNoteBinding
 import com.rel.csam.lab.util.PermissionUtils
 import com.rel.csam.lab.viewmodel.CommonBindingComponent
 import com.rel.csam.lab.viewmodel.TodoViewModel
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
-import java.io.*
-import java.util.*
 
 
 class CanvasActivity : ViewModelActivity<TodoViewModel>() {
@@ -44,11 +42,10 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
         createDataBindingComponent(CommonBindingComponent())
     }
 
-    private lateinit var tessBaseAPI: TessBaseAPI
+//    private lateinit var tessBaseAPI: TessBaseAPI
     private lateinit var detector: FirebaseVisionTextRecognizer
 
     private var canvasView: CanvasView? = null
-    private var parentView: RelativeLayout? = null
     private var lang = "eng"
 
 
@@ -56,7 +53,7 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
         when (item.itemId) {
             R.id.navigation_delete -> canvasView!!.clearCanvas()
             R.id.navigation_save -> {
-                parentView!!.isDrawingCacheEnabled = true
+                canvasView!!.isDrawingCacheEnabled = true
                 if (!PermissionUtils().storagePermission(this@CanvasActivity)) {
                     Toast.makeText(this@CanvasActivity, "Enable Storage Permission", Toast.LENGTH_SHORT).show()
                 } else {
@@ -70,19 +67,29 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
     override fun onCreate() {
         val binding= setContentLayout<DrawNoteBinding>(R.layout.draw_note)
 
-        //canvasView = findViewById(R.id.canvasView);
-        canvasView = CanvasView(this@CanvasActivity)
-        parentView = binding.parentView
-        binding.parentView!!.addView(canvasView)
+        canvasView = findViewById(R.id.canvasView)
         binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
-        tessBaseAPI = TessBaseAPI()
-        val dir = "$filesDir/tesseract"
-        lang = "eng"
-        checkLanguageFile("$dir/tessdata")
-        lang = "kor"
-        checkLanguageFile("$dir/tessdata")
-        tessBaseAPI.init(dir, "eng+kor")
+//        tessBaseAPI = TessBaseAPI()
+//        val dir = "$filesDir/tesseract"
+//        lang = "eng"
+//        checkLanguageFile("$dir/tessdata")
+//        lang = "kor"
+//        checkLanguageFile("$dir/tessdata")
+//        tessBaseAPI.init(dir, "eng+kor")
+
+
+        val chipsLayoutManager = ChipsLayoutManager.newBuilder(this)
+                .setChildGravity(Gravity.TOP)
+                .setScrollingEnabled(true)
+                .setMaxViewsInRow(2)
+                .setGravityResolver { Gravity.CENTER; }
+                .setRowBreaker { position -> position == 6 || position == 11 || position == 2 }
+                .setOrientation(ChipsLayoutManager.HORIZONTAL)
+                .setRowStrategy(ChipsLayoutManager.STRATEGY_FILL_SPACE)
+                .withLastRow(true)
+                .build()
+        binding.tagLayout.layoutManager = chipsLayoutManager
 
         val options = FirebaseVisionCloudTextRecognizerOptions.Builder()
                 .setLanguageHints(listOf("en", "ko"))
@@ -111,7 +118,7 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
 //        val options = BitmapFactory.Options()
 //        options.inSampleSize = 8
 
-        var bitmap: Bitmap? = parentView!!.drawingCache
+        var bitmap: Bitmap? = canvasView!!.drawingCache
         bitmap = GetRotatedBitmap(bitmap, getRotationCompensation("0", this@CanvasActivity, this@CanvasActivity))
 
         Toast.makeText(this, "노트 인식중...", Toast.LENGTH_SHORT).show()
@@ -181,47 +188,47 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
     }
 
 
-    internal fun checkLanguageFile(dir: String): Boolean {
-        val file = File(dir)
-        if (!file.exists() && file.mkdirs())
-            createFiles(dir)
-        else if (file.exists()) {
-            val filePath = "$dir/$lang.traineddata"
-            val langDataFile = File(filePath)
-            if (!langDataFile.exists())
-                createFiles(dir)
-        }
-        return true
-    }
+//    internal fun checkLanguageFile(dir: String): Boolean {
+//        val file = File(dir)
+//        if (!file.exists() && file.mkdirs())
+//            createFiles(dir)
+//        else if (file.exists()) {
+//            val filePath = "$dir/$lang.traineddata"
+//            val langDataFile = File(filePath)
+//            if (!langDataFile.exists())
+//                createFiles(dir)
+//        }
+//        return true
+//    }
 
-    private fun createFiles(dir: String) {
-        val assetMgr = this.assets
-
-        var inputStream: InputStream? = null
-        var outputStream: OutputStream? = null
-
-        try {
-            inputStream = assetMgr.open("$lang.traineddata")
-
-            val destFile = "$dir/$lang.traineddata"
-
-            outputStream = FileOutputStream(destFile)
-
-            val buffer = ByteArray(1024)
-            var read: Int
-            while (true) {
-                read = inputStream!!.read(buffer)
-                if (read == -1) break
-                outputStream.write(buffer, 0, read)
-            }
-
-            inputStream!!.close()
-            outputStream.flush()
-            outputStream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-    }
+//    private fun createFiles(dir: String) {
+//        val assetMgr = this.assets
+//
+//        var inputStream: InputStream? = null
+//        var outputStream: OutputStream? = null
+//
+//        try {
+//            inputStream = assetMgr.open("$lang.traineddata")
+//
+//            val destFile = "$dir/$lang.traineddata"
+//
+//            outputStream = FileOutputStream(destFile)
+//
+//            val buffer = ByteArray(1024)
+//            var read: Int
+//            while (true) {
+//                read = inputStream!!.read(buffer)
+//                if (read == -1) break
+//                outputStream.write(buffer, 0, read)
+//            }
+//
+//            inputStream!!.close()
+//            outputStream.flush()
+//            outputStream.close()
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        }
+//    }
 
     private val ORIENTATIONS = SparseIntArray()
 

@@ -13,12 +13,19 @@
         android:layout_height="match_parent"
         tools:context=".view.CanvasActivity">
 
-        <RelativeLayout
-            android:id="@+id/parentView"
+        <com.rel.csam.lab.view.CanvasView
+            android:id="@+id/canvasView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/white" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tag_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/navigation"
+            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+            android:maxHeight="150dp"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
