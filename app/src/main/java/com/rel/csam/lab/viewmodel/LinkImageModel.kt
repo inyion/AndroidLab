@@ -70,8 +70,6 @@ class LinkImageModel: ListModel<LinkImage>() {
 
         if (isLoading()) return
 
-        Log.d(tag, "getImageToLink")
-
         // 데이터 초기화
         var zoomImage = zoomInImageMap[url] // 상세보기 데이터
         val replaceImages = if (itemsMap.containsKey(url)) { // 리스트데이터
@@ -94,8 +92,6 @@ class LinkImageModel: ListModel<LinkImage>() {
         }
 
         val disposable = Observable.fromCallable {
-
-            Log.d(tag, "fromCallable")
 
             // 새로 불러와야 할 때만
             if (zoomImage == null && replaceImages.size == 0) {
@@ -145,7 +141,6 @@ class LinkImageModel: ListModel<LinkImage>() {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe {
-            Log.d(tag, "subscribe")
 
             if (!TextUtils.isEmpty(zoomImage)) {
                 urlList.removeAt(urlList.lastIndex)

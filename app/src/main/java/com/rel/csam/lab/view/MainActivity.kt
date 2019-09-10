@@ -22,6 +22,7 @@ import android.os.Environment
 import android.text.TextUtils
 import androidx.annotation.ColorRes
 import com.rel.csam.lab.database.TodoAndTag
+import com.rel.csam.lab.viewmodel.TagModel
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -47,8 +48,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
     override fun onCreate() {
         val binding= setContentLayout<ActivityMainBinding>(R.layout.activity_main)
         binding.viewModel = viewModel
-        viewModel.todoDao = AppDatabase.getInstance(this@MainActivity).todoDao()
-        viewModel.tagDao = AppDatabase.getInstance(this@MainActivity).tagDao()
+        viewModel.initDatabase(this@MainActivity)
         expandingList = binding.expandingListMain
         createItems()
         fabOptions = binding.fabOptions
@@ -62,7 +62,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
     private var isFirst = false
     private fun createItems() {
 
-        viewModel.addDisposable(viewModel.todoDao.getTodoList()
+        viewModel.addDisposable(viewModel.getTodoList()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { list ->
@@ -83,7 +83,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                             }
                         } else {
                             val tag = Tag("할일", "group", R.color.purple)
-                            viewModel.addDisposable(viewModel.tagDao.insertTag(tag).subscribeOn(Schedulers.io())
+                            viewModel.addDisposable(viewModel.insertTag(tag).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe {
                                         addItem(tag.tagName, ArrayList(), R.color.purple)
@@ -129,7 +129,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                 builder.setTitle(R.string.enter_title)
                 builder.setPositiveButton(android.R.string.ok) { _, _ ->
                     val todo = Todo(null, text.text.toString(), title)
-                    viewModel.addDisposable(viewModel.todoDao.insertTodo(todo)
+                    viewModel.addDisposable(viewModel.insertTodo(todo)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe {
@@ -164,7 +164,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
     private fun bindSubItem(item: ExpandingItem?, view: View, todo: Todo) {
         (view.findViewById<View>(R.id.sub_title) as TextView).text = todo.name
         view.findViewById<View>(R.id.remove_sub_item).setOnClickListener {
-            viewModel.addDisposable(viewModel.todoDao.deleteTodo(todo)
+            viewModel.addDisposable(viewModel.deleteTodo(todo)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe {
@@ -199,7 +199,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
             val text = data.getStringExtra("tag")
             if (!TextUtils.isEmpty(text)) {
                 val tag = Tag(text, "group", R.color.orange)
-                viewModel.addDisposable(viewModel.tagDao.insertTag(tag)
+                viewModel.addDisposable(viewModel.insertTag(tag)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {

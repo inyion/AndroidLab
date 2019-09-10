@@ -16,9 +16,8 @@
 
 package com.rel.csam.lab.viewmodel
 
-import com.rel.csam.lab.database.TagDao
-import com.rel.csam.lab.database.Todo
-import com.rel.csam.lab.database.TodoDao
+import android.content.Context
+import com.rel.csam.lab.database.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
 
@@ -27,8 +26,8 @@ import io.reactivex.Flowable
  */
 class TodoViewModel : BaseViewModel() {
 
-    lateinit var todoDao: TodoDao
-    lateinit var tagDao: TagDao
+    private lateinit var todoDao: TodoDao
+    lateinit var tagModel: TagModel
 
     override fun init() {
 
@@ -40,6 +39,28 @@ class TodoViewModel : BaseViewModel() {
 
     override fun onStop() {
 
+    }
+
+    fun initDatabase(context: Context) {
+        todoDao = AppDatabase.getInstance(context).todoDao()
+        tagModel = TagModel()
+        tagModel.initDatabase(context)
+    }
+
+    fun getTodoList(): Flowable<List<TodoAndTag>> {
+        return todoDao.getTodoList()
+    }
+
+    fun insertTag(tag: Tag): Completable {
+        return tagModel.tagDao.insertTag(tag)
+    }
+
+    fun insertTodo(todo: Todo): Completable {
+        return todoDao.insertTodo(todo)
+    }
+
+    fun deleteTodo(todo: Todo): Completable {
+        return todoDao.deleteTodo(todo)
     }
 
     /**

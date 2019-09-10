@@ -38,6 +38,9 @@ interface TagDao {
     @Query("SELECT * FROM tag WHERE tag_name = :tag")
     fun getTag(tag: String): Flowable<Tag?>
 
+    @Query("SELECT * FROM tag WHERE type = 'group'")
+    fun getTagList(): Flowable<List<Tag>>
+
     /**
      * Insert a todo in the database. If the todo already exists, replace it.
 

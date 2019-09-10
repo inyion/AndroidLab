@@ -74,8 +74,8 @@ abstract class BaseBindAdapter<VH : RecyclerView.ViewHolder, T> : RecyclerView.A
     }
 
     @BindingAdapter("notifyChange") // resume pause 값을 받고있는데.. 수정이 필요할듯 지금은 아이디어가 생각이 안남..
-    fun notifyChange(view: RecyclerView, notifyChange: LiveData<Int>) {
-        if (notifyChange.value != null) {
+    fun notifyChange(view: RecyclerView, notifyChange: LiveData<Int>?) {
+        if (notifyChange?.value != null) {
 //            commonBindingComponent.invokeHtmlView(notifyChange.value!!)
             if (notifyChange.value == 1) {
                 view.adapter!!.notifyDataSetChanged()

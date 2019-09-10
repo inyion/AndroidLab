@@ -23,9 +23,10 @@ class WebImageListActivity : ViewModelActivity<LinkImageModel>(), SwipeRefreshLa
 
     override fun onCreate() {
         val binding= setContentLayout<WebImageListBinding>(R.layout.web_image_list)
-        binding.viewModel = viewModel as LinkImageModel?
+        binding.viewModel = viewModel
         binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
         binding.recyclerView.setHasFixedSize(true)
+        binding.recyclerView.adapter = bindingComponent as LinkImagesViewAdapter
         binding.refreshLayout.setOnRefreshListener(this)
         Glide.with(this).load(R.drawable.intro).thumbnail(0.8f).into(binding.mainImage)
 

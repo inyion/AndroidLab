@@ -32,6 +32,9 @@
         <activity
             android:name=".view.CanvasActivity"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity
+            android:name=".view.WebImageListActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
 
 </manifest>

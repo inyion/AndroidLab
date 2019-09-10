@@ -13,7 +13,7 @@ abstract class ViewModelActivity<VM: BaseViewModel> : AppCompatActivity() {
 
     lateinit var viewModel: VM
     private lateinit var binding: ViewDataBinding
-    private lateinit var bindingComponent: DataBindingComponent
+    lateinit var bindingComponent: DataBindingComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

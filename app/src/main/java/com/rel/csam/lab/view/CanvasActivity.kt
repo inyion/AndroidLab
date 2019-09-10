@@ -14,12 +14,9 @@ import android.util.Log
 import android.util.SparseIntArray
 import android.view.Gravity
 import android.view.Surface
-import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager
-import com.beloo.widget.chipslayoutmanager.gravity.IChildGravityResolver
-import com.beloo.widget.chipslayoutmanager.layouter.breaker.IRowBreaker
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
@@ -30,16 +27,17 @@ import com.rel.csam.lab.R
 import com.rel.csam.lab.databinding.DrawNoteBinding
 import com.rel.csam.lab.util.PermissionUtils
 import com.rel.csam.lab.viewmodel.CommonBindingComponent
+import com.rel.csam.lab.viewmodel.TagModel
 import com.rel.csam.lab.viewmodel.TodoViewModel
 
 
-class CanvasActivity : ViewModelActivity<TodoViewModel>() {
+class CanvasActivity : ViewModelActivity<TagModel>() {
     override fun createViewModel() {
-        createViewModel(TodoViewModel::class.java)
+        createViewModel(TagModel::class.java)
     }
 
     override fun createDataBindingComponent() {
-        createDataBindingComponent(CommonBindingComponent())
+        createDataBindingComponent(TagViewAdapter(viewModel))
     }
 
 //    private lateinit var tessBaseAPI: TessBaseAPI
@@ -68,6 +66,8 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
         val binding= setContentLayout<DrawNoteBinding>(R.layout.draw_note)
 
         canvasView = findViewById(R.id.canvasView)
+        viewModel.initDatabase(this@CanvasActivity)
+        binding.viewModel = viewModel
         binding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
 //        tessBaseAPI = TessBaseAPI()
@@ -82,19 +82,19 @@ class CanvasActivity : ViewModelActivity<TodoViewModel>() {
         val chipsLayoutManager = ChipsLayoutManager.newBuilder(this)
                 .setChildGravity(Gravity.TOP)
                 .setScrollingEnabled(true)
-                .setMaxViewsInRow(2)
                 .setGravityResolver { Gravity.CENTER; }
-                .setRowBreaker { position -> position == 6 || position == 11 || position == 2 }
                 .setOrientation(ChipsLayoutManager.HORIZONTAL)
-                .setRowStrategy(ChipsLayoutManager.STRATEGY_FILL_SPACE)
+                .setRowStrategy(ChipsLayoutManager.STRATEGY_CENTER)
                 .withLastRow(true)
                 .build()
         binding.tagLayout.layoutManager = chipsLayoutManager
+        binding.tagLayout.adapter = bindingComponent as TagViewAdapter
 
         val options = FirebaseVisionCloudTextRecognizerOptions.Builder()
                 .setLanguageHints(listOf("en", "ko"))
                 .build()
         detector = FirebaseVision.getInstance().getCloudTextRecognizer(options)
+        initViewModel()
     }
 
     private fun saveCanvas() {

@@ -5,26 +5,27 @@
     <data>
         <variable
             name="viewModel"
-            type="com.rel.csam.lab.viewmodel.TodoViewModel"/>
+            type="com.rel.csam.lab.viewmodel.TagModel"/>
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view.CanvasActivity">
+        android:layout_height="match_parent">
 
         <com.rel.csam.lab.view.CanvasView
             android:id="@+id/canvasView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/white" />
+            android:background="@android:color/white"
+            tools:layout_editor_absoluteX="-16dp"
+            tools:layout_editor_absoluteY="-16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tag_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            tools:setItems="@{viewModel.items}"
             app:layout_constraintBottom_toTopOf="@id/navigation"
-            app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
             android:maxHeight="150dp"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
