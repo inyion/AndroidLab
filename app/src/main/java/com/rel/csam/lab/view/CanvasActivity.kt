@@ -9,6 +9,9 @@ import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.util.Log
 import android.util.SparseIntArray
@@ -17,6 +20,7 @@ import android.view.Surface
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager
+import com.beloo.widget.chipslayoutmanager.SpacingItemDecoration
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
@@ -62,8 +66,9 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
         false
     }
 
+    lateinit var binding: DrawNoteBinding
     override fun onCreate() {
-        val binding= setContentLayout<DrawNoteBinding>(R.layout.draw_note)
+        binding = setContentLayout(R.layout.draw_note)
 
         canvasView = findViewById(R.id.canvasView)
         viewModel.initDatabase(this@CanvasActivity)
@@ -84,11 +89,17 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
                 .setScrollingEnabled(true)
                 .setGravityResolver { Gravity.CENTER; }
                 .setOrientation(ChipsLayoutManager.HORIZONTAL)
-                .setRowStrategy(ChipsLayoutManager.STRATEGY_CENTER)
+                .setRowStrategy(ChipsLayoutManager.STRATEGY_DEFAULT)
                 .withLastRow(true)
                 .build()
         binding.tagLayout.layoutManager = chipsLayoutManager
         binding.tagLayout.adapter = bindingComponent as TagViewAdapter
+
+        binding.tagLayout.addItemDecoration(
+                SpacingItemDecoration(
+                        resources.getDimensionPixelOffset(R.dimen.faboptions_separator_margin),
+                        resources.getDimensionPixelOffset(R.dimen.faboptions_separator_margin)
+                ))
 
         val options = FirebaseVisionCloudTextRecognizerOptions.Builder()
                 .setLanguageHints(listOf("en", "ko"))
@@ -158,9 +169,26 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
                         }
                     }
 
-                    Toast.makeText(this, "태그 : $text", Toast.LENGTH_SHORT).show()
                     val data = Intent()
-                    data.putExtra("tag", text)
+                    if (viewModel.selectTagList.size > 0) {
+                        Toast.makeText(this, "메모 추가: $text", Toast.LENGTH_SHORT).show()
+                        data.putExtra("memo", text)
+
+                        val tagSpan = SpannableStringBuilder()
+                        for (tag in viewModel.selectTagList) {
+                            if (!tagSpan.isEmpty()) {
+                                tagSpan.append(",")
+                            }
+                            tagSpan.append(tag.tagName)
+                        }
+
+                        data.putExtra("tag_list", tagSpan.toString())
+                    } else {
+                        Toast.makeText(this, "태그 추가 : $text", Toast.LENGTH_SHORT).show()
+                        data.putExtra("tag", text)
+                    }
+
+
                     setResult(Activity.RESULT_OK, data)
                     finish()
                 }

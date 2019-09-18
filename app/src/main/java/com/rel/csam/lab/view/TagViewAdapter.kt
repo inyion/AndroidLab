@@ -37,9 +37,7 @@ class TagViewAdapter(private val viewModel: TagModel) : BaseBindAdapter<TagViewA
         fun bind(viewModel: TagModel, position: Int) {
 
             chip.setOnSelectClickListener { v, selected ->
-                if (selected) {
-
-                }
+                viewModel.selectTag(position, selected)
             }
 
             chip.chipText = viewModel.getTagName(position)

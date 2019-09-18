@@ -23,6 +23,7 @@ import android.text.TextUtils
 import androidx.annotation.ColorRes
 import com.rel.csam.lab.database.TodoAndTag
 import com.rel.csam.lab.viewmodel.TagModel
+import io.reactivex.Observable
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -101,6 +102,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
 //        addItem("Paul", arrayOf("Golf", "Football"), R.color.green, R.drawable.ic_ghost)
     }
 
+    val tagMap: HashMap<String, ExpandingItem> = HashMap()
     private fun addItem(title: String, subItems: ArrayList<TodoAndTag>, colorRes: Int) {
         //Let's create an item with R.layout.expanding_layout
         val item = expandingList.createNewItem(R.layout.expanding_layout)
@@ -111,7 +113,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
             item.setIndicatorIconRes(R.drawable.ic_ghost)
             //It is possible to get any view inside the inflated layout. Let's set the text in the item
             (item.findViewById(R.id.title) as TextView).text = title
-
+            tagMap[title] = item
 
             //We can create items in batch.
             item.createSubItems(subItems.size)
@@ -196,15 +198,49 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
 
         if (requestCode == requestCodeCanvas && data != null) {
 
-            val text = data.getStringExtra("tag")
-            if (!TextUtils.isEmpty(text)) {
-                val tag = Tag(text, "group", R.color.orange)
-                viewModel.addDisposable(viewModel.insertTag(tag)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe {
-                            addItem(tag.tagName, ArrayList(), R.color.orange)
-                        })
+            if (data.hasExtra("tag")) {
+                val text = data.getStringExtra("tag")
+                if (!TextUtils.isEmpty(text)) {
+                    val tag = Tag(text, "group", R.color.orange)
+                    viewModel.addDisposable(viewModel.insertTag(tag)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe {
+                                addItem(tag.tagName, ArrayList(), R.color.orange)
+                            })
+                }
+            } else {
+                val text = data.getStringExtra("memo")
+                val tagSpan = data.getStringExtra("tag_list").split(",")
+
+                if (TextUtils.isEmpty(text)) return
+
+                for (tagName in tagSpan) {
+                    viewModel.addDisposable(Observable.fromCallable {
+                        val todo = Todo(null, text, tagName)
+                        viewModel.insertTodo(todo)
+                        todo
+                    }
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe{ todo ->
+
+                        val tagItem = tagMap[todo.tag]
+                        if (tagItem != null) {
+                            val newSubItem = tagItem.createSubItem()
+                            bindSubItem(tagItem, newSubItem!!, todo)
+                        } else {
+                            val todoArr: ArrayList<TodoAndTag> = ArrayList()
+                            val todoAndTag = TodoAndTag()
+                            val tag = Tag(todo.tag, "group", R.color.orange)
+                            todoAndTag.todo = todo
+                            todoAndTag.tag = tag
+                            todoArr.add(todoAndTag)
+                            addItem(todo.tag, todoArr, R.color.orange)
+                        }
+
+                    })
+                }
             }
         }
 

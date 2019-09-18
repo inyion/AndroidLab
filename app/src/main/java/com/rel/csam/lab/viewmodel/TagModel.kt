@@ -10,6 +10,7 @@ import io.reactivex.schedulers.Schedulers
 class TagModel: ListModel<Tag>() {
 
     lateinit var tagDao: TagDao
+    val selectTagList: MutableList<Tag> = ArrayList()
 
     override fun init() {
 
@@ -31,6 +32,15 @@ class TagModel: ListModel<Tag>() {
 
     fun getTagName(position: Int): String {
         return getItem(position).tagName
+    }
+
+    fun selectTag(position: Int, isSelected: Boolean) {
+        val tag = getItem(position)
+        if (isSelected) {
+            selectTagList.add(tag)
+        } else {
+            selectTagList.remove(tag)
+        }
     }
 
     fun initDatabase(context: Context) {

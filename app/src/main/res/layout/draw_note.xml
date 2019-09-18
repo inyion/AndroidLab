@@ -15,18 +15,26 @@
         <com.rel.csam.lab.view.CanvasView
             android:id="@+id/canvasView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@android:color/white"
+            android:layout_height="0dp"
+            android:background="@color/white"
             tools:layout_editor_absoluteX="-16dp"
-            tools:layout_editor_absoluteY="-16dp" />
+            tools:layout_editor_absoluteY="-16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/tag_layout"
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tag_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="3dp"
+            android:paddingEnd="3dp"
             tools:setItems="@{viewModel.items}"
+            tools:listitem="@layout/tag_row"
+            android:layoutDirection="ltr"
             app:layout_constraintBottom_toTopOf="@id/navigation"
-            android:maxHeight="150dp"/>
+            android:maxHeight="150dp"
+            android:background="@color/white"/>
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigation"
