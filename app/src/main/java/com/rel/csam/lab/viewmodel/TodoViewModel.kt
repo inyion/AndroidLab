@@ -59,6 +59,10 @@ class TodoViewModel : BaseViewModel() {
         return todoDao.insertTodo(todo)
     }
 
+    fun insertTodoList(todoList: List<Todo>): Completable {
+        return todoDao.insertTodoList(todoList)
+    }
+
     fun deleteTodo(todo: Todo): Completable {
         return todoDao.deleteTodo(todo)
     }

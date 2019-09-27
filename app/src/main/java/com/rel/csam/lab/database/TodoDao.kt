@@ -47,6 +47,9 @@ interface TodoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTodo(todo: Todo): Completable
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertTodoList(todo: List<Todo>): Completable
+
     @Update
     fun updateTodo(todo: Todo): Completable
 

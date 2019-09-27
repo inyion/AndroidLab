@@ -69,17 +69,21 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                 .subscribe { list ->
 
                     if(!isFirst) {// 라이브러리가 recycler가 아니라서 계속 타면 여러개가 됨
-                        var map: HashMap<String, ArrayList<TodoAndTag>> = HashMap()
+                        val map: HashMap<String, ArrayList<TodoAndTag>> = HashMap()
+                        val groupTagList: ArrayList<String> = ArrayList()
                         if (list.isNotEmpty()) {
                             list.forEach { todoAndTag ->
 
                                 var todoList = map[todoAndTag.todo.tag]
-                                if (todoList == null) todoList = ArrayList()
+                                if (todoList == null) {
+                                    todoList = ArrayList()
+                                    groupTagList.add(todoAndTag.todo.tag)
+                                }
                                 todoList.add(todoAndTag)
                                 map[todoAndTag.todo.tag] = todoList
                             }
 
-                            for (group in map.keys) {
+                            for (group in groupTagList) {
                                 addItem(group, map[group]!!, map[group]!![0].tag.color)
                             }
                         } else {
@@ -215,32 +219,32 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
 
                 if (TextUtils.isEmpty(text)) return
 
+                val todoList = ArrayList<Todo>()
                 for (tagName in tagSpan) {
-                    viewModel.addDisposable(Observable.fromCallable {
-                        val todo = Todo(null, text, tagName)
-                        viewModel.insertTodo(todo)
-                        todo
-                    }
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe{ todo ->
-
-                        val tagItem = tagMap[todo.tag]
-                        if (tagItem != null) {
-                            val newSubItem = tagItem.createSubItem()
-                            bindSubItem(tagItem, newSubItem!!, todo)
-                        } else {
-                            val todoArr: ArrayList<TodoAndTag> = ArrayList()
-                            val todoAndTag = TodoAndTag()
-                            val tag = Tag(todo.tag, "group", R.color.orange)
-                            todoAndTag.todo = todo
-                            todoAndTag.tag = tag
-                            todoArr.add(todoAndTag)
-                            addItem(todo.tag, todoArr, R.color.orange)
-                        }
-
-                    })
+                    todoList.add(Todo(null, text, tagName))
                 }
+
+                viewModel.addDisposable(viewModel.insertTodoList(todoList)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe{
+
+                            for (todo in todoList) {
+                                val tagItem = tagMap[todo.tag]
+                                if (tagItem != null) {
+                                    val newSubItem = tagItem.createSubItem()
+                                    bindSubItem(tagItem, newSubItem!!, todo)
+                                } else {
+                                    val todoArr: ArrayList<TodoAndTag> = ArrayList()
+                                    val todoAndTag = TodoAndTag()
+                                    val tag = Tag(todo.tag, "group", R.color.orange)
+                                    todoAndTag.todo = todo
+                                    todoAndTag.tag = tag
+                                    todoArr.add(todoAndTag)
+                                    addItem(todo.tag, todoArr, R.color.orange)
+                                }
+                            }
+                        })
             }
         }
 
