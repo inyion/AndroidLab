@@ -97,6 +97,8 @@ dependencies {
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6'
     implementation 'com.robertlevonyan.view:MaterialChipView:1.2.5'
     implementation 'com.beloo.widget:ChipsLayoutManager:0.3.7@aar'
+    implementation 'com.afollestad.material-dialogs:core:3.1.1'
+    implementation 'com.afollestad.material-dialogs:color:3.1.1'
 
 }
 repositories {

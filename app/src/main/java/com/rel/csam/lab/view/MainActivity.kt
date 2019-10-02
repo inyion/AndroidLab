@@ -163,7 +163,14 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                 (item.findViewById(R.id.remove_item) as View).visibility = View.GONE
             }
 
-            (item.findViewById(R.id.remove_item) as View).setOnClickListener { expandingList.removeItem(item) }
+            (item.findViewById(R.id.remove_item) as View).setOnClickListener {
+                viewModel.addDisposable(viewModel.deleteTag(subItems[0].tag)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe {
+                            expandingList.removeItem(item)
+                        })
+            }
         }
     }
 

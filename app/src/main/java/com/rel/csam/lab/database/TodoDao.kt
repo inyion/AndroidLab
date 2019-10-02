@@ -56,6 +56,9 @@ interface TodoDao {
     @Delete
     fun deleteTodo(todo: Todo): Completable
 
+    @Query("DELETE FROM todo WHERE tag = :tagName")
+    fun deleteAllTodo(tagName: String): Completable
+
     /**
      * Delete all users.
      */

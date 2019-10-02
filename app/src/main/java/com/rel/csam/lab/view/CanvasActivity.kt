@@ -4,13 +4,12 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color.*
 import android.graphics.Matrix
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.os.Build
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.util.Log
@@ -19,6 +18,8 @@ import android.view.Gravity
 import android.view.Surface
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.color.colorChooser
 import com.beloo.widget.chipslayoutmanager.ChipsLayoutManager
 import com.beloo.widget.chipslayoutmanager.SpacingItemDecoration
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -30,9 +31,7 @@ import com.google.firebase.ml.vision.text.FirebaseVisionTextRecognizer
 import com.rel.csam.lab.R
 import com.rel.csam.lab.databinding.DrawNoteBinding
 import com.rel.csam.lab.util.PermissionUtils
-import com.rel.csam.lab.viewmodel.CommonBindingComponent
 import com.rel.csam.lab.viewmodel.TagModel
-import com.rel.csam.lab.viewmodel.TodoViewModel
 
 
 class CanvasActivity : ViewModelActivity<TagModel>() {
@@ -48,12 +47,24 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
     private lateinit var detector: FirebaseVisionTextRecognizer
 
     private var canvasView: CanvasView? = null
-    private var lang = "eng"
-
+//    private var lang = "eng"
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
-            R.id.navigation_delete -> canvasView!!.clearCanvas()
+            R.id.navigation_pencil -> {
+
+                val colors = intArrayOf(RED, GREEN, BLUE)
+
+                MaterialDialog(this).show {
+                    title(R.string.colors)
+                    colorChooser(colors) { dialog, color ->
+                        binding.navigation.itemTextColor = context.resources.getColorStateList(color)
+                        binding.navigation.itemIconTintList = context.resources.getColorStateList(color)
+                    }
+                    positiveButton(R.string.select)
+                }
+
+            }
             R.id.navigation_save -> {
                 canvasView!!.isDrawingCacheEnabled = true
                 if (!PermissionUtils().storagePermission(this@CanvasActivity)) {
@@ -62,6 +73,7 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
                     saveCanvas()
                 }
             }
+            R.id.navigation_delete -> canvasView!!.clearCanvas()
         }
         false
     }
@@ -140,18 +152,19 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
                 .addOnSuccessListener { result ->
                     var text = ""
 
+                    var serverCheck = false
                     for (block in result.textBlocks) {
                         val blockText = block.text
-                        val blockConfidence = block.confidence
-                        val blockLanguages = block.recognizedLanguages
-                        val blockCornerPoints = block.cornerPoints
-                        val blockFrame = block.boundingBox
+//                        val blockConfidence = block.confidence
+//                        val blockLanguages = block.recognizedLanguages
+//                        val blockCornerPoints = block.cornerPoints
+//                        val blockFrame = block.boundingBox
                         for (line in block.lines) {
                             val lineText = line.text
-                            val lineConfidence = line.confidence
-                            val lineLanguages = line.recognizedLanguages
-                            val lineCornerPoints = line.cornerPoints
-                            val lineFrame = line.boundingBox
+//                            val lineConfidence = line.confidence
+//                            val lineLanguages = line.recognizedLanguages
+//                            val lineCornerPoints = line.cornerPoints
+//                            val lineFrame = line.boundingBox
 
                             if (!TextUtils.isEmpty(text)) {
                                 text += " "
@@ -159,38 +172,52 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
 
                             text += lineText
 
-                            for (element in line.elements) {
-                                val elementText = element.text
-                                val elementConfidence = element.confidence
-                                val elementLanguages = element.recognizedLanguages
-                                val elementCornerPoints = element.cornerPoints
-                                val elementFrame = element.boundingBox
-                            }
+//                            for (element in line.elements) {
+//                                val elementText = element.text
+//                                val elementConfidence = element.confidence
+//                                val elementLanguages = element.recognizedLanguages
+//                                val elementCornerPoints = element.cornerPoints
+//                                val elementFrame = element.boundingBox
+//                            }
                         }
+                        serverCheck = true
                     }
 
-                    val data = Intent()
-                    if (viewModel.selectTagList.size > 0) {
-                        Toast.makeText(this, "메모 추가: $text", Toast.LENGTH_SHORT).show()
-                        data.putExtra("memo", text)
-
-                        val tagSpan = SpannableStringBuilder()
-                        for (tag in viewModel.selectTagList) {
-                            if (!tagSpan.isEmpty()) {
-                                tagSpan.append(",")
-                            }
-                            tagSpan.append(tag.tagName)
+                    if (TextUtils.isEmpty(text)) {
+                        if(serverCheck) {
+                            Toast.makeText(this, "악필. 인식불가.", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this, "구글 ML서버 이상 인식불량", Toast.LENGTH_SHORT).show()
+                            val options = FirebaseVisionCloudTextRecognizerOptions.Builder()
+                                    .setLanguageHints(listOf("en", "ko"))
+                                    .build()
+                            detector = FirebaseVision.getInstance().getCloudTextRecognizer(options)
                         }
 
-                        data.putExtra("tag_list", tagSpan.toString())
                     } else {
-                        Toast.makeText(this, "태그 추가 : $text", Toast.LENGTH_SHORT).show()
-                        data.putExtra("tag", text)
+                        val data = Intent()
+                        if (viewModel.selectTagList.size > 0) {
+                            Toast.makeText(this, "메모 추가: $text", Toast.LENGTH_SHORT).show()
+                            data.putExtra("memo", text)
+
+                            val tagSpan = SpannableStringBuilder()
+                            for (tag in viewModel.selectTagList) {
+                                if (!tagSpan.isEmpty()) {
+                                    tagSpan.append(",")
+                                }
+                                tagSpan.append(tag.tagName)
+                            }
+
+                            data.putExtra("tag_list", tagSpan.toString())
+                        } else {
+                            Toast.makeText(this, "태그 추가 : $text", Toast.LENGTH_SHORT).show()
+                            data.putExtra("tag", text)
+                        }
+
+
+                        setResult(Activity.RESULT_OK, data)
+                        finish()
                     }
-
-
-                    setResult(Activity.RESULT_OK, data)
-                    finish()
                 }
                 .addOnFailureListener { ex->
 

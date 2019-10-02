@@ -16,10 +16,7 @@
 
 package com.rel.csam.lab.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import io.reactivex.Completable
 
 import io.reactivex.Flowable
@@ -48,6 +45,9 @@ interface TagDao {
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTag(tag: Tag): Completable
+
+    @Delete
+    fun deleteTag(tag: Tag): Completable
 
     /**
      * Delete all users.

@@ -4,7 +4,8 @@
     <item
         android:id="@+id/navigation_pencil"
         android:icon="@drawable/ic_pencil_black_24dp"
-        android:title="@string/title_draw" />
+        android:title="@string/title_draw"
+        />
 
     <item
         android:id="@+id/navigation_save"

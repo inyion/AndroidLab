@@ -20,6 +20,8 @@ import android.content.Context
 import com.rel.csam.lab.database.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
 /**
  * View Model for the [UserActivity]
@@ -65,6 +67,17 @@ class TodoViewModel : BaseViewModel() {
 
     fun deleteTodo(todo: Todo): Completable {
         return todoDao.deleteTodo(todo)
+    }
+
+    fun deleteTag(tag: Tag): Completable {
+        addDisposable(todoDao.deleteAllTodo(tag.tagName)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+
+                }
+        )
+        return tagModel.deleteTag(tag)
     }
 
     /**

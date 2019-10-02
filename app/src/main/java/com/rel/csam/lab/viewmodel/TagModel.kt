@@ -4,6 +4,7 @@ import android.content.Context
 import com.rel.csam.lab.database.AppDatabase
 import com.rel.csam.lab.database.Tag
 import com.rel.csam.lab.database.TagDao
+import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
@@ -45,6 +46,10 @@ class TagModel: ListModel<Tag>() {
 
     fun initDatabase(context: Context) {
         tagDao = AppDatabase.getInstance(context).tagDao()
+    }
+
+    fun deleteTag(tag: Tag): Completable {
+        return tagDao.deleteTag(tag)
     }
 
 }
