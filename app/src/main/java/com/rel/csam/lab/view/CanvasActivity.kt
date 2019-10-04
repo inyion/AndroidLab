@@ -3,7 +3,9 @@ package com.rel.csam.lab.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Color.*
 import android.graphics.Matrix
 import android.hardware.camera2.CameraAccessException
@@ -48,18 +50,29 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
 
     private var canvasView: CanvasView? = null
 //    private var lang = "eng"
+    private var selectColor = 0
 
     private val mOnNavigationItemSelectedListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when (item.itemId) {
             R.id.navigation_pencil -> {
 
-                val colors = intArrayOf(RED, GREEN, BLUE)
+                val colors = intArrayOf(
+                        parseColor("#F44336"), parseColor("#E91E63"), parseColor("#9C27B0"),
+                        parseColor("#673AB7"), parseColor("#3F51B5"), parseColor("#2196F3"),
+                        parseColor("#03A9F4"), parseColor("#00BCD4"), parseColor("#009688"),
+                        parseColor("#4CAF50"), parseColor("#8BC34A"), parseColor("#CDDC39"),
+                        parseColor("#FFEB3B"), parseColor("#FFC107"), parseColor("#FF9800"),
+                        parseColor("#FF5722"), parseColor("#795548"), parseColor("#9E9E9E"),
+                        parseColor("#607D8B")
+                )
 
                 MaterialDialog(this).show {
                     title(R.string.colors)
                     colorChooser(colors) { dialog, color ->
-                        binding.navigation.itemTextColor = context.resources.getColorStateList(color)
-                        binding.navigation.itemIconTintList = context.resources.getColorStateList(color)
+                        selectColor = color
+                        binding.navigation.itemTextColor = ColorStateList.valueOf(color)
+                        binding.navigation.itemIconTintList = ColorStateList.valueOf(color)
+                        canvasView?.setTextColor(color)
                     }
                     positiveButton(R.string.select)
                 }
@@ -196,6 +209,7 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
 
                     } else {
                         val data = Intent()
+                        data.putExtra("tag_color", if (selectColor != 0) selectColor else Color.WHITE)
                         if (viewModel.selectTagList.size > 0) {
                             Toast.makeText(this, "메모 추가: $text", Toast.LENGTH_SHORT).show()
                             data.putExtra("memo", text)
@@ -213,7 +227,6 @@ class CanvasActivity : ViewModelActivity<TagModel>() {
                             Toast.makeText(this, "태그 추가 : $text", Toast.LENGTH_SHORT).show()
                             data.putExtra("tag", text)
                         }
-
 
                         setResult(Activity.RESULT_OK, data)
                         finish()

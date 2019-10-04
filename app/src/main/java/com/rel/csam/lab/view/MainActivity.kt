@@ -1,6 +1,7 @@
 package com.rel.csam.lab.view
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -87,11 +88,11 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                                 addItem(group, map[group]!!, map[group]!![0].tag.color)
                             }
                         } else {
-                            val tag = Tag("할일", "group", R.color.purple)
+                            val tag = Tag("할일", "group", Color.WHITE)
                             viewModel.addDisposable(viewModel.insertTag(tag).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread())
                                     .subscribe {
-                                        addItem(tag.tagName, ArrayList(), R.color.purple)
+                                        addItem(tag.tagName, ArrayList(), tag.color)
                                     })
                         }
                         isFirst = true
@@ -107,13 +108,13 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
     }
 
     val tagMap: HashMap<String, ExpandingItem> = HashMap()
-    private fun addItem(title: String, subItems: ArrayList<TodoAndTag>, colorRes: Int) {
+    private fun addItem(title: String, subItems: ArrayList<TodoAndTag>, color: Int) {
         //Let's create an item with R.layout.expanding_layout
         val item = expandingList.createNewItem(R.layout.expanding_layout)
 
         //If item creation is successful, let's configure it
         if (item != null) {
-            item.setIndicatorColorRes(colorRes)
+            item.setIndicatorColor(color)
             item.setIndicatorIconRes(R.drawable.ic_ghost)
             //It is possible to get any view inside the inflated layout. Let's set the text in the item
             (item.findViewById(R.id.title) as TextView).text = title
@@ -212,12 +213,12 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
             if (data.hasExtra("tag")) {
                 val text = data.getStringExtra("tag")
                 if (!TextUtils.isEmpty(text)) {
-                    val tag = Tag(text, "group", R.color.orange)
+                    val tag = Tag(text, "group", data.getIntExtra("tag_color", Color.WHITE))
                     viewModel.addDisposable(viewModel.insertTag(tag)
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribe {
-                                addItem(tag.tagName, ArrayList(), R.color.orange)
+                                addItem(tag.tagName, ArrayList(), tag.color)
                             })
                 }
             } else {
@@ -244,11 +245,11 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                                 } else {
                                     val todoArr: ArrayList<TodoAndTag> = ArrayList()
                                     val todoAndTag = TodoAndTag()
-                                    val tag = Tag(todo.tag, "group", R.color.orange)
+                                    val tag = Tag(todo.tag, "group", Color.WHITE)
                                     todoAndTag.todo = todo
                                     todoAndTag.tag = tag
                                     todoArr.add(todoAndTag)
-                                    addItem(todo.tag, todoArr, R.color.orange)
+                                    addItem(todo.tag, todoArr, tag.color)
                                 }
                             }
                         })

@@ -56,6 +56,10 @@ public class CanvasView extends View {
         mPaint.setStrokeWidth(4f);
     }
 
+    public void setTextColor(int color) {
+        mPaint.setColor(color);
+    }
+
     // override onSizeChanged
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
