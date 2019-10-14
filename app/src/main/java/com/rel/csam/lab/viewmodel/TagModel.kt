@@ -52,4 +52,8 @@ class TagModel: ListModel<Tag>() {
         return tagDao.deleteTag(tag)
     }
 
+    fun deleteTag(tag: String): Completable {
+        return tagDao.deleteTag(tag)
+    }
+
 }

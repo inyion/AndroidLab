@@ -69,8 +69,8 @@ class TodoViewModel : BaseViewModel() {
         return todoDao.deleteTodo(todo)
     }
 
-    fun deleteTag(tag: Tag): Completable {
-        addDisposable(todoDao.deleteAllTodo(tag.tagName)
+    fun deleteTag(tag: String): Completable {
+        addDisposable(todoDao.deleteAllTodo(tag)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {

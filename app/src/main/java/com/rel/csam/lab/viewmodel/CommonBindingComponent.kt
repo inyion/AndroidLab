@@ -4,10 +4,14 @@ import android.app.Dialog
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
+import android.util.Base64
 import android.util.TypedValue
 import android.view.View
 import android.widget.*
@@ -790,7 +794,23 @@ class CommonBindingComponent : DataBindingComponent {
     fun setLoadingImage(view: ImageView, imgUrl: LiveData<String>) {
         if (!TextUtils.isEmpty(imgUrl.value)) {
             view.visibility = View.VISIBLE
-            Glide.with(view.context).load(imgUrl.value).into(view)
+
+            val uri = Uri.parse(imgUrl.value)
+            if (Util.safeEqual(uri.scheme, "data")) {
+                val decodedString = Base64.decode(uri.toString(), Base64.DEFAULT)
+                val bitMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+                view.setImageBitmap(bitMap)
+            } else {
+
+                val url = if(imgUrl.value!!.startsWith("/")) {
+                    "https://www.google.com$imgUrl.value"
+                } else {
+                    imgUrl.value
+                }
+
+                Glide.with(view.context).load(url).into(view)
+            }
+
         } else {
             view.visibility = View.GONE
         }
@@ -814,7 +834,21 @@ class CommonBindingComponent : DataBindingComponent {
 
     @BindingAdapter("imageSrc")
     fun imageSrc(view: SquareImageView, image: String) {
-        Glide.with(view).load(image).thumbnail(0.8f).into(view)
+        val uri = Uri.parse(image)
+        if (Util.safeEqual(uri.scheme, "data")) {
+            val decodedString = Base64.decode(uri.toString(), Base64.DEFAULT)
+            val bitMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            view.setImageBitmap(bitMap)
+        } else {
+
+            val url = if(image.startsWith("/")) {
+                "https://www.google.com$image"
+            } else {
+                image
+            }
+
+            Glide.with(view).load(url).thumbnail(0.8f).into(view)
+        }
     }
 
 }

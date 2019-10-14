@@ -1,5 +1,6 @@
 package com.rel.csam.lab.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.databinding.ObservableArrayList
@@ -7,6 +8,7 @@ import android.text.TextUtils
 import android.util.Log
 import com.rel.csam.lab.App
 import com.rel.csam.lab.model.LinkImage
+import com.rel.csam.lab.util.Util
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -16,9 +18,11 @@ import org.jsoup.Jsoup
 class LinkImageModel: ListModel<LinkImage>() {
 
     companion object {
-        const val mainWeb: String = "https://www.gettyimagesgallery.com/collection/celebrities/"
+//        const val mainWeb: String = "https://www.gettyimagesgallery.com/collection/celebrities/"
+        const val mainWeb: String = "https://www.google.com/search?q="
     }
     private val tag: String = "LinkImage"
+    var keyword: String = ""
     private var urlList = ArrayList<String>()       // 히스토리
     private var itemsMap = HashMap<String, ArrayList<LinkImage>>()
     private var zoomInImageMap = HashMap<String, String>()
@@ -31,11 +35,12 @@ class LinkImageModel: ListModel<LinkImage>() {
 
     override fun init() {
         if (isLoading()) return
-
+        keyword = keyword.replace(" ", "+")
+        val url = "$mainWeb$keyword&tbm=shop"
         urlList.clear()
-        urlList.add(mainWeb)
+        urlList.add(url)
 
-        getImageToLink(mainWeb, getLoadingImage(mainWeb))
+        getImageToLink(url, getLoadingImage(url))
     }
 
     override fun onBackPressed(): Boolean {
@@ -87,7 +92,7 @@ class LinkImageModel: ListModel<LinkImage>() {
         }
 
         // 히스토리 등록
-        if (url != mainWeb && url != urlList[urlList.lastIndex]) {
+        if (url != mainWeb + keyword && url != urlList[urlList.lastIndex]) {
             urlList.add(url)
         }
 
@@ -107,25 +112,31 @@ class LinkImageModel: ListModel<LinkImage>() {
                 val images = document.select("img")
 
                 for (image in images) {
-                    if (image.attr("class") == "img-fluid") {
-                        putLoadingImage(url, image.attr("src"))
-                    } else {
-                        if (image.parentNode() != null) {
-                            val parentNode = image.parentNode().parentNode()
-                            if (image.hasAttr("data-zoomable")) {
-                                zoomImage = image.attr("src")
-                            }
-                            else if (parentNode != null && parentNode.nodeName() == "a") {
+                    var parentNode = image.parentNode()
+                    if(Util.safeEqual(parentNode.nodeName(), "div")) parentNode = parentNode.parentNode()
+                    if(Util.safeEqual(parentNode.nodeName(), "div")) parentNode = parentNode.parentNode()
+//                    if (image.attr("class") == "img-fluid") {
+//                        putLoadingImage(url, image.attr("src"))
+//                    } else {
+//                        if (image.parentNode() != null) {
+//                            val parentNode = image.parentNode().parentNode()
+//                            if (image.hasAttr("data-zoomable")) {
+//                                zoomImage = image.attr("src")
+//                            }
+//                            else
+                            if (parentNode != null && parentNode.nodeName() == "a") {
                                 val data = LinkImage()
                                 data.href = parentNode.attr("href")
                                 data.image = image.attr("src")
                                 if (TextUtils.isEmpty(data.image)) {
                                     data.image = image.attr("data-src")
                                 }
-                                replaceImages.add(data)
+                                if (!TextUtils.isEmpty(data.image)) {
+                                    replaceImages.add(data)
+                                }
                             }
-                        }
-                    }
+//                        }
+//                    }
                 }
 
                 when {
@@ -156,8 +167,15 @@ class LinkImageModel: ListModel<LinkImage>() {
 
     fun onItemClick(index: Int) {
         val data = items.value!![index]
-        if (data.href != null) {
-            getImageToLink(data.href!!, data.image!!)
+        if (data.href != null && !Util.safeEqual(data.href, "#")) {
+
+            val url = if(data.href!!.startsWith("/")) {
+                "https://www.google.com" + data.href
+            } else {
+                data.href
+            }
+
+            getImageToLink(url!!, data.image!!)
         }
     }
 

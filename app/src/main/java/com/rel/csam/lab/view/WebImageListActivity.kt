@@ -23,6 +23,7 @@ class WebImageListActivity : ViewModelActivity<LinkImageModel>(), SwipeRefreshLa
 
     override fun onCreate() {
         val binding= setContentLayout<WebImageListBinding>(R.layout.web_image_list)
+        viewModel.keyword = intent.getStringExtra("keyword")
         binding.viewModel = viewModel
         binding.recyclerView.layoutManager = GridLayoutManager(applicationContext, 3)
         binding.recyclerView.setHasFixedSize(true)

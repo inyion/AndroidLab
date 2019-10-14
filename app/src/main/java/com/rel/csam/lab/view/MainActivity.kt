@@ -165,7 +165,7 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
             }
 
             (item.findViewById(R.id.remove_item) as View).setOnClickListener {
-                viewModel.addDisposable(viewModel.deleteTag(subItems[0].tag)
+                viewModel.addDisposable(viewModel.deleteTag(title)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe {
@@ -185,6 +185,11 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
                         item!!.removeSubItem(view)
                     })
 
+        }
+        view.findViewById<View>(R.id.sub_title).setOnClickListener { v ->
+            val intent = Intent(v.context, WebImageListActivity::class.java)
+            intent.putExtra("keyword", todo.name)
+            startActivity(intent)
         }
     }
 

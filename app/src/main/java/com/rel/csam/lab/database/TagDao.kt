@@ -49,6 +49,9 @@ interface TagDao {
     @Delete
     fun deleteTag(tag: Tag): Completable
 
+    @Query("DELETE FROM tag WHERE tag_name = :tagName")
+    fun deleteTag(tagName: String): Completable
+
     /**
      * Delete all users.
      */
