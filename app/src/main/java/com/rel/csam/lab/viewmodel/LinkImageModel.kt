@@ -36,7 +36,7 @@ class LinkImageModel: ListModel<LinkImage>() {
     override fun init() {
         if (isLoading()) return
         keyword = keyword.replace(" ", "+")
-        val url = "$mainWeb$keyword&tbm=shop"
+        val url = "$mainWeb$keyword&tbm=isch"
         urlList.clear()
         urlList.add(url)
 
@@ -108,8 +108,8 @@ class LinkImageModel: ListModel<LinkImage>() {
                 val response = Jsoup.connect(url)
                         .method(Connection.Method.GET)
                         .execute()
-                val document = response.parse()
-                val images = document.select("img")
+                val body = response.parse().body()
+                val images = body.select("img")
 
                 for (image in images) {
                     var parentNode = image.parentNode()
@@ -131,7 +131,10 @@ class LinkImageModel: ListModel<LinkImage>() {
                                 if (TextUtils.isEmpty(data.image)) {
                                     data.image = image.attr("data-src")
                                 }
-                                if (!TextUtils.isEmpty(data.image)) {
+                                // 이미지 빈값제거, 상대 경로인 내부 이미지 제거, 데이터 타입 이미지일때 jpeg가 아닌것은 제거
+                                if (!TextUtils.isEmpty(data.image)
+                                        && !data.image!!.startsWith("/")
+                                        && !(data.image!!.startsWith("data:") && !data.image!!.startsWith("data:image/jpeg;"))) {
                                     replaceImages.add(data)
                                 }
                             }

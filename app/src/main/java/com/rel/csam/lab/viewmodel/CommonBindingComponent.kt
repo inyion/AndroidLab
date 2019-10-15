@@ -33,6 +33,7 @@ import com.rel.csam.lab.util.Util
 import com.rel.csam.lab.view.CommonActivity
 import com.rel.csam.lab.view.SquareImageView
 import com.rel.csam.lab.view.ZoomInImageActivity
+import java.lang.Exception
 
 class CommonBindingComponent : DataBindingComponent {
 
@@ -836,18 +837,16 @@ class CommonBindingComponent : DataBindingComponent {
     fun imageSrc(view: SquareImageView, image: String) {
         val uri = Uri.parse(image)
         if (Util.safeEqual(uri.scheme, "data")) {
-            val decodedString = Base64.decode(uri.toString(), Base64.DEFAULT)
-            val bitMap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
-            view.setImageBitmap(bitMap)
-        } else {
+            try {
+                val base64Str = uri.toString().split("base64,")[1]
+                val decodedBytes = Base64.decode(base64Str, Base64.DEFAULT)
+//                val bitMap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                Glide.with(view).load(decodedBytes).into(view)
+            } catch (e: Exception) {
 
-            val url = if(image.startsWith("/")) {
-                "https://www.google.com$image"
-            } else {
-                image
             }
-
-            Glide.with(view).load(url).thumbnail(0.8f).into(view)
+        } else {
+            Glide.with(view).load(image).thumbnail(0.8f).into(view)
         }
     }
 
