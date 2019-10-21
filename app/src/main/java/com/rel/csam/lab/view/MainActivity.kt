@@ -1,7 +1,11 @@
 package com.rel.csam.lab.view
 
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -34,7 +38,7 @@ import java.io.FileOutputStream
  * creator : sam
  * date : 2019. 1. 12.
  */
-class MainActivity : ViewModelActivity<TodoViewModel>() {
+class MainActivity: ViewModelActivity<TodoViewModel>() {
 
     override fun createViewModel() {
         createViewModel(TodoViewModel::class.java)
@@ -187,9 +191,45 @@ class MainActivity : ViewModelActivity<TodoViewModel>() {
 
         }
         view.findViewById<View>(R.id.sub_title).setOnClickListener { v ->
-            val intent = Intent(v.context, WebImageListActivity::class.java)
-            intent.putExtra("keyword", todo.name)
-            startActivity(intent)
+
+            val dialog = android.app.AlertDialog.Builder(v.context)
+            val items = arrayOf<CharSequence>(getString(R.string.search),
+                    getString(R.string.search_image),
+                    getString(R.string.search_youtube),
+                    getString(R.string.search_shopping))
+            dialog.setItems(items) { dialog, which ->
+                when(items[which]) {
+                    getString(R.string.search) -> {
+                        val intent = Intent(v.context, WebViewActivity::class.java)
+                        intent.putExtra("url", "https://www.google.com/search?q=" + todo.name.replace(" ", "+"))
+                        startActivity(intent)
+                    }
+                    getString(R.string.search_image) -> {
+
+                        val uri = Uri.parse("https://www.instagram.com/explore/tags/"+ todo.name.replace(" ", "") +"/?hl=ko")
+                        v.context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+//                        val intent = Intent(v.context, WebImageListActivity::class.java)
+//                        intent.putExtra("keyword", todo.name)
+//                        startActivity(intent)
+                    }
+                    getString(R.string.search_youtube) -> {
+
+                        val uri = Uri.parse("https://www.youtube.com/results?search_query=" + todo.name.replace(" ", "+"))
+                        startActivity(Intent(Intent.ACTION_VIEW, uri))
+
+                    }
+                    getString(R.string.search_shopping) -> {
+                        //TODO 네이버, 카카오 추가
+                        val intent = Intent(v.context, WebViewActivity::class.java)
+                        intent.putExtra("url", "https://www.google.com/search?q=" + todo.name.replace(" ", "+") + "&tbm=shop")
+                        startActivity(intent)
+                    }
+                }
+
+                dialog.dismiss()
+            }
+
+            dialog.show()
         }
     }
 
