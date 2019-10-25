@@ -238,8 +238,6 @@ class MainActivity: ViewModelActivity<TodoViewModel>() {
             R.id.faboptions_textsms -> {
 //                fabOptions.setButtonColor(R.id.faboptions_textsms, R.color.orange)
 //                fabOptions.setButtonColor(R.id.faboptions_share, R.color.white)
-
-//                Toast.makeText(v.context, "Message", Toast.LENGTH_SHORT).show()
                 startActivityForResult(Intent(v.context, CanvasActivity::class.java), requestCodeCanvas)
             }
             R.id.faboptions_share -> {

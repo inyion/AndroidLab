@@ -5,3 +5,7 @@
 0	2	0	clean	9b248b8fd6a56fc9
 0	364	1571305170	CMakeFiles/native-lib.dir/native-lib.cpp.o	d16becb931b334c0
 364	441	1571305171	/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	374b0d555478da04
+0	4	0	clean	9b248b8fd6a56fc9
+0	5	0	clean	9b248b8fd6a56fc9
+11	637	1571988203	CMakeFiles/native-lib.dir/native-lib.cpp.o	d16becb931b334c0
+637	724	1571988203	/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/armeabi-v7a/libnative-lib.so	374b0d555478da04
