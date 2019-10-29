@@ -23,6 +23,6 @@ data class Todo(@PrimaryKey(autoGenerate = true)
                 @ColumnInfo(name = "seq")
                  var seq: Long?,
                 @ColumnInfo(name = "name")
-                 val name: String,
+                 var name: String,
                 @ColumnInfo(name = "tag")
-                 val tag: String)
+                 var tag: String)

@@ -168,26 +168,97 @@ class MainActivity: ViewModelActivity<TodoViewModel>() {
                 (item.findViewById(R.id.remove_item) as View).visibility = View.GONE
             }
 
-            (item.findViewById(R.id.remove_item) as View).setOnClickListener {
-                viewModel.addDisposable(viewModel.deleteTag(title)
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe {
-                            expandingList.removeItem(item)
-                        })
+            (item.findViewById(R.id.remove_item) as View).setOnClickListener {v ->
+
+                val dialog = android.app.AlertDialog.Builder(v.context)
+                val items = arrayOf<CharSequence>(getString(R.string.update),
+                        getString(R.string.delete))
+
+                dialog.setItems(items) { dialog, which ->
+                    when(items[which]) {
+                        getString(R.string.update) -> {
+                            val text = EditText(v.context)
+                            text.setText(title, TextView.BufferType.EDITABLE)
+                            val builder = AlertDialog.Builder(v.context)
+                            builder.setView(text)
+                            builder.setTitle(R.string.enter_title)
+                            builder.setPositiveButton(android.R.string.ok) { _, _ ->
+
+                                viewModel.addDisposable(Observable.fromCallable {
+                                            viewModel.tagModel.updateTag(title, text.text.toString())
+                                        }
+                                        .subscribeOn(Schedulers.io())
+                                        .observeOn(AndroidSchedulers.mainThread())
+                                        .subscribe {
+                                            (item.findViewById(R.id.title) as TextView).text = text.text.toString()
+                                        })
+                            }
+                            builder.setNegativeButton(android.R.string.cancel, null)
+                            builder.show()
+                        }
+                        getString(R.string.delete) -> {
+
+                            viewModel.addDisposable(viewModel.deleteTag(title)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe {
+                                        expandingList.removeItem(item)
+                                    })
+                        }
+                    }
+
+                    dialog.dismiss()
+                }
+
+                dialog.show()
             }
         }
     }
 
     private fun bindSubItem(item: ExpandingItem?, view: View, todo: Todo) {
         (view.findViewById<View>(R.id.sub_title) as TextView).text = todo.name
-        view.findViewById<View>(R.id.remove_sub_item).setOnClickListener {
-            viewModel.addDisposable(viewModel.deleteTodo(todo)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
-                        item!!.removeSubItem(view)
-                    })
+        view.findViewById<View>(R.id.remove_sub_item).setOnClickListener {v ->
+
+            val dialog = android.app.AlertDialog.Builder(v.context)
+            val items = arrayOf<CharSequence>(getString(R.string.update),
+                    getString(R.string.delete))
+
+            dialog.setItems(items) { dialog, which ->
+                when(items[which]) {
+                    getString(R.string.update) -> {
+                        val text = EditText(v.context)
+                        text.setText(todo.name, TextView.BufferType.EDITABLE)
+                        val builder = AlertDialog.Builder(v.context)
+                        builder.setView(text)
+                        builder.setTitle(R.string.enter_title)
+                        builder.setPositiveButton(android.R.string.ok) { _, _ ->
+                            todo.name = text.text.toString()
+                            viewModel.addDisposable(viewModel.updateTodo(todo)
+                                    .subscribeOn(Schedulers.io())
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .subscribe {
+                                        (view.findViewById<View>(R.id.sub_title) as TextView).text = todo.name
+                                    })
+
+                        }
+                        builder.setNegativeButton(android.R.string.cancel, null)
+                        builder.show()
+                    }
+                    getString(R.string.delete) -> {
+
+                        viewModel.addDisposable(viewModel.deleteTodo(todo)
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe {
+                                    item!!.removeSubItem(view)
+                                })
+                    }
+                }
+
+                dialog.dismiss()
+            }
+
+            dialog.show()
 
         }
         view.findViewById<View>(R.id.sub_title).setOnClickListener { v ->

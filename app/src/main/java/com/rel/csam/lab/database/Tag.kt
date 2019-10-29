@@ -24,7 +24,7 @@ import java.util.*
 @Entity(tableName = "tag")
 data class Tag(@PrimaryKey
                @ColumnInfo(name = "tag_name")
-                val tagName: String,
+                var tagName: String,
                @ColumnInfo(name = "type")
                 val type: String,
                @ColumnInfo(name = "color")

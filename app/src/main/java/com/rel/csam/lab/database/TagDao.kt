@@ -46,8 +46,23 @@ interface TagDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertTag(tag: Tag): Completable
 
+    @Update
+    fun updateTag(tag: Tag): Completable
+
     @Delete
     fun deleteTag(tag: Tag): Completable
+
+    @Transaction
+    fun updateTagName(preTagName: String, tagName: String) {
+        updateTodoTag(preTagName, tagName)
+        updateTag(preTagName, tagName)
+    }
+
+    @Query("UPDATE tag SET tag_name = :tagName WHERE tag_name = :preTagName")
+    fun updateTag(preTagName: String, tagName: String): Completable
+
+    @Query("UPDATE todo SET tag = :tagName WHERE tag = :preTagName")
+    fun updateTodoTag(preTagName: String, tagName: String): Completable
 
     @Query("DELETE FROM tag WHERE tag_name = :tagName")
     fun deleteTag(tagName: String): Completable

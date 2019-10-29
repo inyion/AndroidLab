@@ -22,6 +22,9 @@
 
     <string name="search">Search</string>
     <string name="search_image">Image</string>
-    <string name="search_youtube">Youtube</string>
+    <string name="search_youtube">YouTube</string>
     <string name="search_shopping">Shopping</string>
+
+    <string name="update">Update</string>
+    <string name="delete">Delete</string>
 </resources>

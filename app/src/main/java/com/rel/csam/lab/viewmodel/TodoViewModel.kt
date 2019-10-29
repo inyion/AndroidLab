@@ -65,6 +65,14 @@ class TodoViewModel : BaseViewModel() {
         return todoDao.insertTodoList(todoList)
     }
 
+    fun updateTodo(todo: Todo): Completable {
+        return todoDao.updateTodo(todo)
+    }
+
+    fun updateTagName(preTagName: String, tagName: String) {
+        tagModel.updateTag(preTagName, tagName)
+    }
+
     fun deleteTodo(todo: Todo): Completable {
         return todoDao.deleteTodo(todo)
     }
