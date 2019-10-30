@@ -1,36 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:bind="http://schemas.android.com/tools">
-
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="viewModel"
-            type="com.rel.csam.lab.viewmodel.LinkImageModel"/>
+            type="com.rel.csam.lab.viewmodel.TodoViewModel"/>
     </data>
-
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/refresh_layout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        bind:setLoadingImage="@{viewModel.loadingImage}">
+        android:background="@color/colorBackground">
 
-        <RelativeLayout
+        <com.rel.csam.lab.view.expending.ExpandingList
+            android:id="@+id/expanding_list_main"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recycler_view"
-                android:scrollbars="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                bind:setItems="@{viewModel.items}"
-                bind:goZoomInImage="@{viewModel.zoomImage}"/>
-            <ImageView
-                android:id="@+id/main_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                bind:setLoadingImage="@{viewModel.loadingImage}"/>
-        </RelativeLayout>
+            android:layout_height="match_parent"/>
 
-    </android.support.v4.widget.SwipeRefreshLayout>
+        <com.rel.csam.lab.view.faboptions.FabOptions
+            android:id="@+id/fab_options"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            app:button_menu="@menu/menu_faboptions"
+            app:background_color="@color/purple"
+            app:fab_color="@color/colorPrimaryDark"
+            />
+    </RelativeLayout>
 </layout>

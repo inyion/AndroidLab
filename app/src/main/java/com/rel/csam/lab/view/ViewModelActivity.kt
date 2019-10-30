@@ -1,50 +1,68 @@
 package com.rel.csam.lab.view
 
-import android.databinding.DataBindingComponent
-import android.databinding.DataBindingUtil
-import android.databinding.ViewDataBinding
-import android.support.v7.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
+import androidx.databinding.DataBindingComponent
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.rel.csam.lab.viewmodel.BaseViewModel
 
-abstract class ViewModelActivity : AppCompatActivity() {
+abstract class ViewModelActivity<VM: BaseViewModel> : AppCompatActivity() {
 
-    var viewModel: BaseViewModel? = null
-    var binding: ViewDataBinding? = null
+    lateinit var viewModel: VM
+    private lateinit var binding: ViewDataBinding
+    lateinit var bindingComponent: DataBindingComponent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        createViewModel()
+        createDataBindingComponent()
         onCreate()
-        binding!!.executePendingBindings()
+        binding.executePendingBindings()
     }
+
+    abstract fun createViewModel()
+
+    abstract fun createDataBindingComponent()
 
     abstract fun onCreate()
 
     override fun onBackPressed() {
-        if (viewModel!!.onBackPressed()) {
+        if (viewModel.onBackPressed()) {
             super.onBackPressed()
         }
     }
 
     override fun onDestroy() {
-        if (viewModel != null) viewModel!!.onDispose()
+        viewModel.onDispose()
         super.onDestroy()
     }
 
     override fun onStop() {
-        if (viewModel != null) viewModel!!.onStop()
+        viewModel.onStop()
         super.onStop()
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T: ViewDataBinding> setContentView(layoutId: Int, bindingComponent: DataBindingComponent, viewModel: BaseViewModel):T ? {
+    fun <T: ViewDataBinding> setContentLayout(layoutId: Int):T  {
         binding = DataBindingUtil.setContentView(this, layoutId, bindingComponent)
-        this.viewModel = viewModel
-        return binding as T?
+        binding.lifecycleOwner = this
+        return binding as T
+    }
+
+    fun <T : ViewModel> createViewModel(modelClass: Class<T>) {
+        val viewModel = ViewModelProviders.of(this).get(modelClass)
+        this.viewModel = viewModel as VM
+    }
+
+    fun createDataBindingComponent(component: DataBindingComponent) {
+        this.bindingComponent = component
     }
 
     fun initViewModel() {
-        viewModel!!.init()
+        viewModel.init()
     }
 
 }

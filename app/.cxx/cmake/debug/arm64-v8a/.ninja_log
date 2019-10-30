@@ -1,0 +1,11 @@
+# ninja log v5
+0	307	1570007473	CMakeFiles/native-lib.dir/native-lib.cpp.o	486589bffa142f41
+307	366	1570007473	/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	490d704bc5090b6a
+0	4	0	clean	9b248b8fd6a56fc9
+0	2	0	clean	9b248b8fd6a56fc9
+0	240	1571305171	CMakeFiles/native-lib.dir/native-lib.cpp.o	486589bffa142f41
+240	329	1571305171	/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	490d704bc5090b6a
+0	1	0	clean	9b248b8fd6a56fc9
+0	9	0	clean	9b248b8fd6a56fc9
+1	303	1571988203	CMakeFiles/native-lib.dir/native-lib.cpp.o	486589bffa142f41
+303	416	1571988203	/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so	490d704bc5090b6a

@@ -1,0 +1,19 @@
+{
+  "buildFiles": [
+    "/home/sam/StudioProjects/AndroidLab/app/src/main/cpp/CMakeLists.txt",
+    "/home/sam/Android/Sdk/ndk/20.0.5594570/build/cmake/android.toolchain.cmake",
+    "/home/sam/Android/Sdk/ndk/20.0.5594570/build/cmake/platforms.cmake"
+  ],
+  "cleanCommands": [
+    "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/release/x86\" clean"
+  ],
+  "buildTargetsCommand": "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/release/x86\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "native-lib-Release-x86": {
+      "artifactName": "native-lib",
+      "buildCommand": "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/release/x86\" native-lib",
+      "abi": "x86",
+      "output": "/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/release/obj/x86/libnative-lib.so"
+    }
+  }
+}
