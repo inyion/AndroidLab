@@ -1,5 +1,5 @@
 {
-  "ndkFolder": "/home/sam/Android/Sdk/ndk/20.0.5594570",
+  "ndkFolder": "/home/sam/Android/Sdk/ndk/21.1.6352462",
   "messages": [
     {
       "level": "INFO",
@@ -23,6 +23,10 @@
     },
     {
       "level": "INFO",
+      "message": "Considering /home/sam/Android/Sdk/ndk/21.1.6352462 in SDK ndk folder"
+    },
+    {
+      "level": "INFO",
       "message": "Considering /home/sam/Android/Sdk/ndk/20.0.5594570 in SDK ndk folder"
     },
     {
@@ -31,7 +35,7 @@
     },
     {
       "level": "INFO",
-      "message": "No user requested version, choosing /home/sam/Android/Sdk/ndk/20.0.5594570 which is version 20.0.5594570"
+      "message": "No user requested version, choosing /home/sam/Android/Sdk/ndk/21.1.6352462 which is version 21.1.6352462"
     }
   ]
 }

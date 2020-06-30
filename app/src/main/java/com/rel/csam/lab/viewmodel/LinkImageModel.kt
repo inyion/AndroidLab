@@ -189,6 +189,6 @@ class LinkImageModel: ListModel<LinkImage>() {
     }
 
     private fun getLoadingImage(url: String): String {
-        return App.prefs.getString(url, "")
+        return App.prefs.getString(url, "")!!
     }
 }

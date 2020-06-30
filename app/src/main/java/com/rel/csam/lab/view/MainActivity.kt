@@ -375,9 +375,9 @@ class MainActivity: ViewModelActivity<TodoViewModel>() {
     companion object {
 
         // Used to load the 'native-lib' library on application startup.
-        init {
-            System.loadLibrary("native-lib")
-        }
+//        init {
+//            System.loadLibrary("native-lib")
+//        }
 
         val requestCodeCanvas = 2
     }

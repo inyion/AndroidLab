@@ -646,7 +646,7 @@ class CommonBindingComponent : DataBindingComponent {
     fun copyToClipboard(view: View, str: LiveData<String>?) {
         if (view.getSafeContext() is CommonActivity && str != null && str.value != null) {
             val clip = view.getSafeContext().getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
-            clip.primaryClip = ClipData.newPlainText("text", str.value)
+            clip.setPrimaryClip(ClipData.newPlainText("text", str.value))
 //            ToastUtil.showToastCenter(view.getSafeContext().getString(R.string.copy_clipboard))
         }
     }

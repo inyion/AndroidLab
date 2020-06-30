@@ -1,22 +1,22 @@
 {
   "stringTable": {
     "0": "/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/debug/arm64-v8a",
-    "1": "--target=aarch64-none-linux-android21 --gcc-toolchain=/home/sam/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/sam/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dnative_lib_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -fno-addrsig -Wa,--noexecstack -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
+    "1": "--target=aarch64-none-linux-android21 --gcc-toolchain=/home/sam/Android/Sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/linux-x86_64 --sysroot=/home/sam/Android/Sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/linux-x86_64/sysroot -Dnative_lib_EXPORTS -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -O0 -fno-limit-debug-info -fPIC"
   },
   "buildFiles": [
-    "/home/sam/StudioProjects/AndroidLab/app/src/main/cpp/CMakeLists.txt",
-    "/home/sam/Android/Sdk/ndk/20.0.5594570/build/cmake/android.toolchain.cmake",
-    "/home/sam/Android/Sdk/ndk/20.0.5594570/build/cmake/platforms.cmake"
+    "/home/sam/Android/Sdk/ndk/21.0.6113669/build/cmake/platforms.cmake",
+    "/home/sam/Android/Sdk/ndk/21.0.6113669/build/cmake/android.toolchain.cmake",
+    "/home/sam/StudioProjects/AndroidLab/app/src/main/cpp/CMakeLists.txt"
   ],
   "cleanCommands": [
     "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/debug/arm64-v8a\" clean"
   ],
-  "buildTargetsCommand": "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "buildTargetsCommand": "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/debug/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "native-lib-Debug-arm64-v8a": {
       "buildCommand": "/home/sam/Android/Sdk/cmake/3.10.2.4988404/bin/ninja -C \"/home/sam/StudioProjects/AndroidLab/app/.cxx/cmake/debug/arm64-v8a\" native-lib",
       "buildType": "debug",
-      "toolchain": "3839862351",
+      "toolchain": "1714575173",
       "abi": "arm64-v8a",
       "artifactName": "native-lib",
       "files": [
@@ -27,12 +27,13 @@
         }
       ],
       "headers": [],
-      "output": "/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so"
+      "output": "/home/sam/StudioProjects/AndroidLab/app/build/intermediates/cmake/debug/obj/arm64-v8a/libnative-lib.so",
+      "runtimeFiles": []
     }
   },
   "toolchains": {
-    "3839862351": {
-      "cppCompilerExecutable": "/home/sam/Android/Sdk/ndk/20.0.5594570/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
+    "1714575173": {
+      "cppCompilerExecutable": "/home/sam/Android/Sdk/ndk/21.0.6113669/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++"
     }
   },
   "cFileExtensions": [],
